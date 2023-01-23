@@ -58,7 +58,7 @@ def populate_summary(tests):
         
         pubdir = os.path.join(rundir, "pub_0.csv")
         
-        lat_df = pd.read_csv(pubdir, on_bad_lines="skip", skiprows=2, skipfooter=3)
+        lat_df = pd.read_csv(pubdir, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
         
         try:
             lat_head = [col for col in lat_df.columns if "latency" in col.lower()][0]
@@ -108,43 +108,43 @@ def populate_summary(tests):
         ),
         html.Tbody([
             html.Tr(
-                [html.Td("Count")] + [html.Td(summary["count"]) for summary in lat_summaries]
+                [html.Td("Count")] + [html.Td("{0:,.2f}".format(summary["count"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("mean")] + [html.Td(summary["mean"]) for summary in lat_summaries]
+                [html.Td("mean")] + [html.Td("{0:,.2f}".format(summary["mean"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("median")] + [html.Td(summary["median"]) for summary in lat_summaries]
+                [html.Td("median")] + [html.Td("{0:,.2f}".format(summary["median"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("variance")] + [html.Td(summary["variance"]) for summary in lat_summaries]
+                [html.Td("variance")] + [html.Td("{0:,.2f}".format(summary["variance"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("std")] + [html.Td(summary["std"]) for summary in lat_summaries]
+                [html.Td("std")] + [html.Td("{0:,.2f}".format(summary["std"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("skew")] + [html.Td(summary["skew"]) for summary in lat_summaries]
+                [html.Td("skew")] + [html.Td("{0:,.2f}".format(summary["skew"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("range")] + [html.Td(summary["range"]) for summary in lat_summaries]
+                [html.Td("range")] + [html.Td("{0:,.2f}".format(summary["range"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("lower_quartile")] + [html.Td(summary["lower_quartile"]) for summary in lat_summaries]
+                [html.Td("lower_quartile")] + [html.Td("{0:,.2f}".format(summary["lower_quartile"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("upper_quartile")] + [html.Td(summary["upper_quartile"]) for summary in lat_summaries]
+                [html.Td("upper_quartile")] + [html.Td("{0:,.2f}".format(summary["upper_quartile"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("interquartile_range")] + [html.Td(summary["interquartile_range"]) for summary in lat_summaries]
+                [html.Td("interquartile_range")] + [html.Td("{0:,.2f}".format(summary["interquartile_range"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("min")] + [html.Td(summary["min"]) for summary in lat_summaries]
+                [html.Td("min")] + [html.Td("{0:,.2f}".format(summary["min"])) for summary in lat_summaries]
             ),
             html.Tr(
-                [html.Td("max")] + [html.Td(summary["max"]) for summary in lat_summaries]
+                [html.Td("max")] + [html.Td("{0:,.2f}".format(summary["max"])) for summary in lat_summaries]
             )
         ])
-    ], bordered=True)
+    ], bordered=True, hover=True)
     
     return lat_summary_table, ""
     
