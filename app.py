@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import dash_bootstrap_components as dbc
+import plotly.express as px
 
 from pprint import pprint
 from dash import Dash, html, dcc, Output, Input
@@ -22,6 +23,10 @@ app.layout = dbc.Container([
         html.H1("Throughput Summary Stats"),    
         html.Div(id="throughput-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
     ]),
+    html.Div([
+        html.H1("Logs Timeline"),
+        html.Div(id="log-timeline-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    ])
 ], style={"marginTop": "2vh"}, fluid=True)
 
 @app.callback(
@@ -37,30 +42,32 @@ def populate_dropdown(testpath):
 @app.callback(
     [
         Output("latency-summary-output", "children"),
-        Output("throughput-summary-output", "children")
+        Output("throughput-summary-output", "children"),
+        Output("log-timeline-output", "children")
     ],
     Input("test-dropdown", "value")
 )
 def populate_summary(tests):
     
     if tests is None:
-        return "", ""
+        return "", "", ""
     
     lat_summaries = []
     tp_summaries = []
+    log_timelines = []
     for test in tests:
         rundir = os.path.join(test, "run_1")
         
         if not os.path.exists(rundir):
-            return "", ""
+            return "", "", ""
         
         csv_files = [file for file in os.listdir(rundir) if ".csv" in file]
         
         if len(csv_files) == 0:
-            return "", ""
+            return "", "", ""
         
         if "pub_0.csv" not in csv_files:
-            return "", ""
+            return "", "", ""
         
         sub_files = [file for file in csv_files if "sub" in file]
         
@@ -72,7 +79,7 @@ def populate_summary(tests):
             lat_head = [col for col in lat_df.columns if "latency" in col.lower()][0]
             lat_df = lat_df[lat_head]
         except Exception as e:
-            return "", ""
+            return "", "", ""
         
         count = len(lat_df.index)
         mean = lat_df.mean()
@@ -150,6 +157,41 @@ def populate_summary(tests):
         
         tp_summaries.append(tp_summary_stats)
         
+        logdir = os.path.join(rundir, "logs")
+        logs = [os.path.join(logdir, file) for file in os.listdir(logdir)]
+        cpu_logs = [file for file in logs if "_cpu.log" in file]
+        
+        cpu_logs_data = []
+        
+        for log in cpu_logs:
+            cpu_log_data = {
+                "start": "",
+                "end": "",
+                "vm": os.path.basename(log).replace("_cpu.log", "").replace("csr-dds-", "").replace("app", "vm")
+            }
+            
+            log_df = pd.read_csv(log, skiprows=1, skipfooter=1, engine="python", on_bad_lines="skip", delim_whitespace=True)
+            
+            time_df = log_df.iloc[:,0]
+            cpu_log_data["start"] = "1970-01-01 " + str(time_df.min())
+            cpu_log_data["end"] = "1970-01-01 " + str(time_df.max())
+            
+            cpu_logs_data.append(cpu_log_data)
+            
+        test_df = pd.DataFrame(cpu_logs_data)
+        
+        fig = px.timeline(test_df, x_start="start", x_end="end", y="vm", color="vm")
+        fig.update_layout(xaxis=dict(
+            title="Log Timestamp",
+            tickformat="%H:%M:%S"
+        ))
+            
+        log_timeline = html.Div([
+            html.H5(os.path.basename(test)),
+            dcc.Graph(figure=fig)
+        ])
+        log_timelines.append(log_timeline)
+        
     lat_summary_table = dbc.Table([
         html.Thead(
             html.Tr(
@@ -194,7 +236,9 @@ def populate_summary(tests):
         ])
     ], bordered=True, hover=True)
         
-    return lat_summary_table, tp_summary_table
+    log_timelines = html.Div(log_timelines)
+        
+    return lat_summary_table, tp_summary_table, log_timelines
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")
