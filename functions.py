@@ -1,8 +1,10 @@
 import os
+import dash_bootstrap_components as dbc
 import pandas as pd
 
 from pprint import pprint
 from rich.console import Console
+from dash import Dash, html, dcc, Output, Input
 
 console = Console()
 
@@ -113,3 +115,26 @@ def get_cpu_log_df(test):
         cpu_logs_data.append(cpu_log_data)
         
     return pd.DataFrame(cpu_logs_data)
+
+def generate_summary_table(summaries):
+    return dbc.Table([
+        html.Thead(
+            html.Tr(
+                [html.Th("Stat")] + [html.Th( os.path.basename(summary["test"]) ) for summary in summaries]
+            )
+        ),
+        html.Tbody([
+            html.Tr([html.Td("Count")] + [html.Td("{0:,.2f}".format(summary["count"])) for summary in summaries]),
+            html.Tr([html.Td("mean")] + [html.Td("{0:,.2f}".format(summary["mean"])) for summary in summaries]),
+            html.Tr([html.Td("median")] + [html.Td("{0:,.2f}".format(summary["median"])) for summary in summaries]),
+            html.Tr([html.Td("variance")] + [html.Td("{0:,.2f}".format(summary["variance"])) for summary in summaries]),
+            html.Tr([html.Td("std")] + [html.Td("{0:,.2f}".format(summary["std"])) for summary in summaries]),
+            html.Tr([html.Td("skew")] + [html.Td("{0:,.2f}".format(summary["skew"])) for summary in summaries]),
+            html.Tr([html.Td("range")] + [html.Td("{0:,.2f}".format(summary["range"])) for summary in summaries]),
+            html.Tr([html.Td("lower_quartile")] + [html.Td("{0:,.2f}".format(summary["lower_quartile"])) for summary in summaries]),
+            html.Tr([html.Td("upper_quartile")] + [html.Td("{0:,.2f}".format(summary["upper_quartile"])) for summary in summaries]),
+            html.Tr([html.Td("interquartile_range")] + [html.Td("{0:,.2f}".format(summary["interquartile_range"])) for summary in summaries]),
+            html.Tr([html.Td("min")] + [html.Td("{0:,.2f}".format(summary["min"])) for summary in summaries]),
+            html.Tr([html.Td("max")] + [html.Td("{0:,.2f}".format(summary["max"])) for summary in summaries])
+        ])
+    ], bordered=True, hover=True)

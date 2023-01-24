@@ -79,49 +79,8 @@ def populate_summary(tests):
         ])
         log_timelines.append(log_timeline)
         
-    lat_summary_table = dbc.Table([
-        html.Thead(
-            html.Tr(
-                [html.Th("Stat")] + [html.Th( os.path.basename(lat_summary["test"]) ) for lat_summary in lat_summaries]
-            )
-        ),
-        html.Tbody([
-            html.Tr([html.Td("Count")] + [html.Td("{0:,.2f}".format(summary["count"])) for summary in lat_summaries]),
-            html.Tr([html.Td("mean")] + [html.Td("{0:,.2f}".format(summary["mean"])) for summary in lat_summaries]),
-            html.Tr([html.Td("median")] + [html.Td("{0:,.2f}".format(summary["median"])) for summary in lat_summaries]),
-            html.Tr([html.Td("variance")] + [html.Td("{0:,.2f}".format(summary["variance"])) for summary in lat_summaries]),
-            html.Tr([html.Td("std")] + [html.Td("{0:,.2f}".format(summary["std"])) for summary in lat_summaries]),
-            html.Tr([html.Td("skew")] + [html.Td("{0:,.2f}".format(summary["skew"])) for summary in lat_summaries]),
-            html.Tr([html.Td("range")] + [html.Td("{0:,.2f}".format(summary["range"])) for summary in lat_summaries]),
-            html.Tr([html.Td("lower_quartile")] + [html.Td("{0:,.2f}".format(summary["lower_quartile"])) for summary in lat_summaries]),
-            html.Tr([html.Td("upper_quartile")] + [html.Td("{0:,.2f}".format(summary["upper_quartile"])) for summary in lat_summaries]),
-            html.Tr([html.Td("interquartile_range")] + [html.Td("{0:,.2f}".format(summary["interquartile_range"])) for summary in lat_summaries]),
-            html.Tr([html.Td("min")] + [html.Td("{0:,.2f}".format(summary["min"])) for summary in lat_summaries]),
-            html.Tr([html.Td("max")] + [html.Td("{0:,.2f}".format(summary["max"])) for summary in lat_summaries])
-        ])
-    ], bordered=True, hover=True)
-    
-    tp_summary_table = dbc.Table([
-        html.Thead(
-            html.Tr(
-                [html.Th("Stat")] + [html.Th( os.path.basename(tp_summary["test"]) ) for tp_summary in tp_summaries]
-            )
-        ),
-        html.Tbody([
-            html.Tr([html.Td("Count")] + [html.Td("{0:,.2f}".format(summary["count"])) for summary in tp_summaries]),
-            html.Tr([html.Td("mean")] + [html.Td("{0:,.2f}".format(summary["mean"])) for summary in tp_summaries]),
-            html.Tr([html.Td("median")] + [html.Td("{0:,.2f}".format(summary["median"])) for summary in tp_summaries]),
-            html.Tr([html.Td("variance")] + [html.Td("{0:,.2f}".format(summary["variance"])) for summary in tp_summaries]),
-            html.Tr([html.Td("std")] + [html.Td("{0:,.2f}".format(summary["std"])) for summary in tp_summaries]),
-            html.Tr([html.Td("skew")] + [html.Td("{0:,.2f}".format(summary["skew"])) for summary in tp_summaries]),
-            html.Tr([html.Td("range")] + [html.Td("{0:,.2f}".format(summary["range"])) for summary in tp_summaries]),
-            html.Tr([html.Td("lower_quartile")] + [html.Td("{0:,.2f}".format(summary["lower_quartile"])) for summary in tp_summaries]),
-            html.Tr([html.Td("upper_quartile")] + [html.Td("{0:,.2f}".format(summary["upper_quartile"])) for summary in tp_summaries]),
-            html.Tr([html.Td("interquartile_range")] + [html.Td("{0:,.2f}".format(summary["interquartile_range"])) for summary in tp_summaries]),
-            html.Tr([html.Td("min")] + [html.Td("{0:,.2f}".format(summary["min"])) for summary in tp_summaries]),
-            html.Tr([html.Td("max")] + [html.Td("{0:,.2f}".format(summary["max"])) for summary in tp_summaries])
-        ])
-    ], bordered=True, hover=True)
+    lat_summary_table = generate_summary_table(lat_summaries)
+    tp_summary_table = generate_summary_table(tp_summaries)
         
     log_timelines = html.Div(log_timelines)
         
