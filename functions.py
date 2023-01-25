@@ -206,10 +206,14 @@ def generate_metric_output_content(title, metric):
         html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
     ])
     
-def get_boxplot(dfs, y_title):
+def get_plot(type, dfs, x_title, y_title):
     df = pd.concat(dfs, axis=1)
 
-    fig = px.box(df, log_y=True)
-    fig.update_layout(xaxis_title="Test", yaxis_title=y_title)
+    if "box" in type:
+        fig = px.box(df, log_y=True)
+    elif "dot" in type:
+        fig = px.scatter(df)
+
+    fig.update_layout(xaxis_title=x_title, yaxis_title=y_title)
     
     return fig

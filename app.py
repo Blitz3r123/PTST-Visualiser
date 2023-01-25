@@ -44,14 +44,19 @@ def populate_dropdown(testpath):
     [
         Output("latency-summary-output", "children"),
         Output("latency-boxplot-output", "children"),
+        Output("latency-dotplot-output", "children"),
         Output("throughput-summary-output", "children"),
         Output("throughput-boxplot-output", "children"),
+        Output("throughput-dotplot-output", "children"),
         Output("sample-rate-summary-output", "children"),
         Output("sample-rate-boxplot-output", "children"),
+        Output("sample-rate-dotplot-output", "children"),
         Output("total-samples-summary-output", "children"),
         Output("total-samples-boxplot-output", "children"),
+        Output("total-samples-dotplot-output", "children"),
         Output("lost-samples-summary-output", "children"),
         Output("lost-samples-boxplot-output", "children"),
+        Output("lost-samples-dotplot-output", "children"),
         Output("log-timeline-output", "children")
     ],
     Input("test-dropdown", "value")
@@ -59,7 +64,7 @@ def populate_dropdown(testpath):
 def populate_summary(tests):
     
     if tests is None:
-        return "", "", "", "", "", "", "", "", "", "", ""
+        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
@@ -115,43 +120,38 @@ def populate_summary(tests):
         log_timelines.append(log_timeline)
     
     lat_summary_table = generate_summary_table(lat_summaries)
-    lat_boxplot_fig = get_boxplot(lat_dfs, "Latency (us)") if lat_dfs else None
-    if lat_boxplot_fig is None:
-        lat_boxplot = ""
-    else:
-        lat_boxplot = dcc.Graph(figure=lat_boxplot_fig)
+    lat_boxplot_fig = get_plot("box", lat_dfs, "Test", "Latency (us)") if lat_dfs else None
+    lat_boxplot = dcc.Graph(figure=lat_boxplot_fig) if lat_boxplot_fig else None
+    lat_dotplot_fig = get_plot("dot", lat_dfs, "Increasing Time", "Latency (us)") if lat_dfs else None
+    lat_dotplot = dcc.Graph(figure=lat_dotplot_fig) if lat_dotplot_fig else None
     
     tp_summary_table = generate_summary_table(tp_summaries)
-    tp_boxplot_fig = get_boxplot(tp_dfs, "Throughput (mbps)") if tp_dfs else None
-    if tp_boxplot_fig is None:
-        tp_boxplot = ""
-    else:
-        tp_boxplot = dcc.Graph(figure=tp_boxplot_fig)
+    tp_boxplot_fig = get_plot("box", tp_dfs, "Test", "Throughput (mbps)") if tp_dfs else None
+    tp_boxplot = dcc.Graph(figure=tp_boxplot_fig) if tp_boxplot_fig else None
+    tp_dotplot_fig = get_plot("dot", tp_dfs, "Increasing Time In Seconds", "Throughput (mbps)") if tp_dfs else None
+    tp_dotplot = dcc.Graph(figure=tp_dotplot_fig) if tp_dotplot_fig else None
     
     sample_rate_summary_table = generate_summary_table(sample_rate_summaries)
-    sr_boxplot_fig = get_boxplot(sr_dfs, "Sample Rate (samples/s)") if sr_dfs else None
-    if sr_boxplot_fig is None:
-        sr_boxplot = ""
-    else:
-        sr_boxplot = dcc.Graph(figure=sr_boxplot_fig)
+    sr_boxplot_fig = get_plot("box", sr_dfs, "Test", "Sample Rate (samples/s)") if sr_dfs else None
+    sr_boxplot = dcc.Graph(figure=sr_boxplot_fig) if sr_boxplot_fig else None
+    sr_dotplot_fig = get_plot("dot", sr_dfs, "Increasing Time In Seconds", "Sample Rate (samples/s)") if sr_dfs else None
+    sr_dotplot = dcc.Graph(figure=sr_dotplot_fig) if sr_boxplot_fig else None
     
     total_samples_summary_table = generate_summary_table(total_samples_summaries)
-    total_samples_boxplot_fig = get_boxplot(total_samples_dfs, "Total Samples") if total_samples_dfs else None
-    if total_samples_boxplot_fig is None:
-        total_samples_boxplot = ""
-    else:
-        total_samples_boxplot = dcc.Graph(figure=total_samples_boxplot_fig)
+    total_samples_boxplot_fig = get_plot("box", total_samples_dfs, "Test", "Total Samples") if total_samples_dfs else None
+    total_samples_boxplot = dcc.Graph(figure=total_samples_boxplot_fig) if total_samples_boxplot_fig else None
+    total_samples_dotplot_fig = get_plot("dot", total_samples_dfs, "Increasing Time In Seconds", "Total Samples") if total_samples_dfs else None
+    total_samples_dotplot = dcc.Graph(figure=total_samples_dotplot_fig) if total_samples_dotplot_fig else None
     
     lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
-    lost_samples_boxplot_fig = get_boxplot(lost_samples_dfs, "Lost Samples") if lost_samples_dfs else None
-    if lost_samples_boxplot_fig is None:
-        lost_samples_boxplot = ""
-    else:
-        lost_samples_boxplot = dcc.Graph(figure=lost_samples_boxplot_fig)
+    lost_samples_boxplot_fig = get_plot("box", lost_samples_dfs, "Test", "Lost Samples") if lost_samples_dfs else None
+    lost_samples_boxplot = dcc.Graph(figure=lost_samples_boxplot_fig) if lost_samples_boxplot_fig else None
+    lost_samples_dotplot_fig = get_plot("dot", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
+    lost_samples_dotplot = dcc.Graph(figure=lost_samples_dotplot_fig) if lost_samples_dotplot_fig else None
     
     log_timelines = html.Div(log_timelines)
         
-    return lat_summary_table, lat_boxplot, tp_summary_table, tp_boxplot, sample_rate_summary_table, sr_boxplot, total_samples_summary_table, total_samples_boxplot, lost_samples_summary_table, lost_samples_boxplot, log_timelines
+    return lat_summary_table, lat_boxplot, lat_dotplot, tp_summary_table, tp_boxplot, tp_dotplot, sample_rate_summary_table, sr_boxplot, sr_dotplot, total_samples_summary_table, total_samples_boxplot, total_samples_dotplot, lost_samples_summary_table, lost_samples_boxplot, lost_samples_dotplot, log_timelines
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")
