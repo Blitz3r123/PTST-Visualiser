@@ -1,6 +1,7 @@
 import os
 import dash_bootstrap_components as dbc
 import pandas as pd
+import plotly.express as px
 
 from pprint import pprint
 from rich.console import Console
@@ -204,3 +205,11 @@ def generate_metric_output_content(title, metric):
         html.H3(title + " Transient Analyses", id=metric + "-transient-title"),
         html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
     ])
+    
+def get_boxplot(dfs, y_title):
+    df = pd.concat(dfs, axis=1)
+
+    fig = px.box(df, log_y=True)
+    fig.update_layout(xaxis_title="Test", yaxis_title=y_title)
+    
+    return fig

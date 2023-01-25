@@ -43,6 +43,7 @@ def populate_dropdown(testpath):
 @app.callback(
     [
         Output("latency-summary-output", "children"),
+        Output("latency-boxplot-output", "children"),
         Output("throughput-summary-output", "children"),
         Output("sample-rate-summary-output", "children"),
         Output("total-samples-summary-output", "children"),
@@ -54,7 +55,7 @@ def populate_dropdown(testpath):
 def populate_summary(tests):
     
     if tests is None:
-        return "", "", "", "", "", ""
+        return "", "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
@@ -63,8 +64,11 @@ def populate_summary(tests):
     lost_samples_summaries = []
     log_timelines = []
     
+    lat_dfs = []
+    
     for test in tests:
         lat_df = get_lat_df(test)
+        lat_dfs.append(lat_df.rename(os.path.basename(test)))
         lat_summary_stats = get_summary_stats(lat_df, test)
         lat_summaries.append(lat_summary_stats)
         
@@ -97,16 +101,25 @@ def populate_summary(tests):
             dcc.Graph(figure=fig)
         ])
         log_timelines.append(log_timeline)
-        
+    
     lat_summary_table = generate_summary_table(lat_summaries)
+    lat_boxplot_fig = get_boxplot(lat_dfs, "Latency (us)") if lat_dfs else None
+    if lat_boxplot_fig is None:
+        lat_boxplot = ""
+    else:
+        lat_boxplot = dcc.Graph(figure=lat_boxplot_fig)
+    
     tp_summary_table = generate_summary_table(tp_summaries)
+    
     sample_rate_summary_table = generate_summary_table(sample_rate_summaries)
+    
     total_samples_summary_table = generate_summary_table(total_samples_summaries)
+    
     lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
-        
+    
     log_timelines = html.Div(log_timelines)
         
-    return lat_summary_table, tp_summary_table, sample_rate_summary_table, total_samples_summary_table, lost_samples_summary_table, log_timelines
+    return lat_summary_table, lat_boxplot, tp_summary_table, sample_rate_summary_table, total_samples_summary_table, lost_samples_summary_table, log_timelines
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")
