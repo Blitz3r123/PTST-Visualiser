@@ -19,28 +19,13 @@ app.layout = dbc.Container([
     html.Div([dbc.ListGroup(
         generate_toc()
     )]),
+    generate_metric_output_content("Latency", "latency"),
+    generate_metric_output_content("Throughput", "throughput"),
+    generate_metric_output_content("Sample Rate", "sample-rate"),
+    generate_metric_output_content("Total Samples", "total-samples"),
+    generate_metric_output_content("Lost Samples", "lost-samples"),
     html.Div([
-        html.H1("Latency Summary Stats", id="latency-summary-title"),
-        html.Div(id="latency-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ]),
-    html.Div([
-        html.H1("Throughput Summary Stats", id="throughput-summary-title"),
-        html.Div(id="throughput-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ]),
-    html.Div([
-        html.H1("Sample Rate Summary Stats", id="sample-rate-summary-title"),
-        html.Div(id="sample-rate-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ]),
-    html.Div([
-        html.H1("Total Samples Summary Stats", id="total-samples-summary-title"),
-        html.Div(id="total-samples-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ]),
-    html.Div([
-        html.H1("Lost Samples Summary Stats", id="lost-samples-summary-title"),
-        html.Div(id="lost-samples-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ]),
-    html.Div([
-        html.H1("Logs Timeline", id="summary-title"),
+        html.H3("Logs Timeline", id="log-timeline-title"),
         html.Div(id="log-timeline-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
     ])
 ], style={"marginTop": "2vh"}, fluid=True)

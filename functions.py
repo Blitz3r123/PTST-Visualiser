@@ -147,23 +147,23 @@ def generate_toc_section(title, metric):
         ),
         html.A(
             dbc.ListGroupItem(title + " Box Plots"),
-            href="#" +metric+ "-boxplot-output"
+            href="#" +metric+ "-boxplot-title"
         ),
         html.A(
             dbc.ListGroupItem(title + " Dot Plots"),
-            href="#" +metric+ "-dotplot-output"
+            href="#" +metric+ "-dotplot-title"
         ),
         html.A(
             dbc.ListGroupItem(title + " Histograms"),
-            href="#" +metric+ "-histogram-output"
+            href="#" +metric+ "-histogram-title"
         ),
         html.A(
             dbc.ListGroupItem(title + " Empirical Cumulative Distribution Functions"),
-            href="#" +metric+ "-cdf-output"
+            href="#" +metric+ "-cdf-title"
         ),
         html.A(
             dbc.ListGroupItem(title + " Transient Analyses"),
-            href="#" +metric+ "-transient-output"
+            href="#" +metric+ "-transient-title"
         )
     ]
     return output
@@ -178,6 +178,29 @@ def generate_toc():
     
     output = []
     for item in lists:
-        output = output + item
+        output = output + item 
+        
+    output = output + [html.H5("Logs"), html.A(dbc.ListGroupItem("Log Timeline"), href="#log-timeline-title")]
         
     return output
+
+def generate_metric_output_content(title, metric):
+    return html.Div([
+        html.H3(title + " Summary Stats", id=metric + "-summary-title"),
+        html.Div(id=metric + "-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        
+        html.H3(title + " Box Plots", id=metric + "-boxplot-title"),
+        html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        
+        html.H3(title + " Dot Plots", id=metric + "-dotplot-title"),
+        html.Div(id=metric + "-dotplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        
+        html.H3(title + " Histograms", id=metric + "-histogram-title"),
+        html.Div(id=metric + "-histogram-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        
+        html.H3(title + " Empirical Cumulative Distribution Functions", id=metric + "-cdf-title"),
+        html.Div(id=metric + "-cdf-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        
+        html.H3(title + " Transient Analyses", id=metric + "-transient-title"),
+        html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    ])
