@@ -155,6 +155,10 @@ def generate_toc_section(title, metric):
             href="#" +metric+ "-dotplot-title"
         ),
         html.A(
+            dbc.ListGroupItem(title + " Line Plots"),
+            href="#" +metric+ "-lineplot-title"
+        ),
+        html.A(
             dbc.ListGroupItem(title + " Histograms"),
             href="#" +metric+ "-histogram-title"
         ),
@@ -193,6 +197,9 @@ def generate_metric_output_content(title, metric):
         html.H3(title + " Box Plots", id=metric + "-boxplot-title"),
         html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
         
+        html.H3(title + " Line Plots", id=metric + "-lineplot-title"),
+        html.Div(id=metric + "-lineplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        
         html.H3(title + " Dot Plots", id=metric + "-dotplot-title"),
         html.Div(id=metric + "-dotplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
         
@@ -213,7 +220,13 @@ def get_plot(type, dfs, x_title, y_title):
         fig = px.box(df, log_y=True)
     elif "dot" in type:
         fig = px.scatter(df)
+    elif "line" in type:
+        fig = px.line(df)
+    elif "histogram" in type:
+        fig = px.histogram(df)
+    elif "cdf" in type:
+        fig = px.ecdf(df)
 
     fig.update_layout(xaxis_title=x_title, yaxis_title=y_title)
     
-    return fig
+    return dcc.Graph(figure=fig)

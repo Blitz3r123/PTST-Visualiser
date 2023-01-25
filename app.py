@@ -45,18 +45,43 @@ def populate_dropdown(testpath):
         Output("latency-summary-output", "children"),
         Output("latency-boxplot-output", "children"),
         Output("latency-dotplot-output", "children"),
+        Output("latency-lineplot-output", "children"),
+        Output("latency-histogram-output", "children"),
+        Output("latency-cdf-output", "children"),
+        Output("latency-transient-output", "children"),
+        
         Output("throughput-summary-output", "children"),
         Output("throughput-boxplot-output", "children"),
         Output("throughput-dotplot-output", "children"),
+        Output("throughput-lineplot-output", "children"),
+        Output("throughput-histogram-output", "children"),
+        Output("throughput-cdf-output", "children"),
+        Output("throughput-transient-output", "children"),
+        
         Output("sample-rate-summary-output", "children"),
         Output("sample-rate-boxplot-output", "children"),
         Output("sample-rate-dotplot-output", "children"),
+        Output("sample-rate-lineplot-output", "children"),
+        Output("sample-rate-histogram-output", "children"),
+        Output("sample-rate-cdf-output", "children"),
+        Output("sample-rate-transient-output", "children"),
+        
         Output("total-samples-summary-output", "children"),
         Output("total-samples-boxplot-output", "children"),
         Output("total-samples-dotplot-output", "children"),
+        Output("total-samples-lineplot-output", "children"),
+        Output("total-samples-histogram-output", "children"),
+        Output("total-samples-cdf-output", "children"),
+        Output("total-samples-transient-output", "children"),
+        
         Output("lost-samples-summary-output", "children"),
         Output("lost-samples-boxplot-output", "children"),
         Output("lost-samples-dotplot-output", "children"),
+        Output("lost-samples-lineplot-output", "children"),
+        Output("lost-samples-histogram-output", "children"),
+        Output("lost-samples-cdf-output", "children"),
+        Output("lost-samples-transient-output", "children"),
+        
         Output("log-timeline-output", "children")
     ],
     Input("test-dropdown", "value")
@@ -64,7 +89,7 @@ def populate_dropdown(testpath):
 def populate_summary(tests):
     
     if tests is None:
-        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
@@ -120,38 +145,48 @@ def populate_summary(tests):
         log_timelines.append(log_timeline)
     
     lat_summary_table = generate_summary_table(lat_summaries)
-    lat_boxplot_fig = get_plot("box", lat_dfs, "Test", "Latency (us)") if lat_dfs else None
-    lat_boxplot = dcc.Graph(figure=lat_boxplot_fig) if lat_boxplot_fig else None
-    lat_dotplot_fig = get_plot("dot", lat_dfs, "Increasing Time", "Latency (us)") if lat_dfs else None
-    lat_dotplot = dcc.Graph(figure=lat_dotplot_fig) if lat_dotplot_fig else None
-    
+    lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (us)") if lat_dfs else None
+    lat_dotplot = get_plot("dot", lat_dfs, "Increasing Time", "Latency (us)") if lat_dfs else None
+    lat_lineplot = get_plot("line", lat_dfs, "Increasing Time", "Latency (us)") if lat_dfs else None
+    lat_histogram = get_plot("histogram", lat_dfs, "Increasing Time", "Latency (us)") if lat_dfs else None
+    lat_cdf = get_plot("cdf", lat_dfs, "Latency (us)", "F(x)") if lat_dfs else None
+    lat_transient = None
+
     tp_summary_table = generate_summary_table(tp_summaries)
-    tp_boxplot_fig = get_plot("box", tp_dfs, "Test", "Throughput (mbps)") if tp_dfs else None
-    tp_boxplot = dcc.Graph(figure=tp_boxplot_fig) if tp_boxplot_fig else None
-    tp_dotplot_fig = get_plot("dot", tp_dfs, "Increasing Time In Seconds", "Throughput (mbps)") if tp_dfs else None
-    tp_dotplot = dcc.Graph(figure=tp_dotplot_fig) if tp_dotplot_fig else None
+    tp_boxplot = get_plot("box", tp_dfs, "Test", "Throughput (mbps)") if tp_dfs else None
+    tp_dotplot = get_plot("dot", tp_dfs, "Increasing Time In Seconds", "Throughput (mbps)") if tp_dfs else None
+    tp_lineplot = get_plot("line", tp_dfs, "Increasing Time", "Latency (us)") if tp_dfs else None
+    tp_histogram = get_plot("histogram", tp_dfs, "Increasing Time", "Latency (us)") if tp_dfs else None
+    tp_cdf = get_plot("cdf", tp_dfs, "Throughput (mbps)", "F(x)") if tp_dfs else None
+    tp_transient = None
     
     sample_rate_summary_table = generate_summary_table(sample_rate_summaries)
-    sr_boxplot_fig = get_plot("box", sr_dfs, "Test", "Sample Rate (samples/s)") if sr_dfs else None
-    sr_boxplot = dcc.Graph(figure=sr_boxplot_fig) if sr_boxplot_fig else None
-    sr_dotplot_fig = get_plot("dot", sr_dfs, "Increasing Time In Seconds", "Sample Rate (samples/s)") if sr_dfs else None
-    sr_dotplot = dcc.Graph(figure=sr_dotplot_fig) if sr_boxplot_fig else None
+    sr_boxplot = get_plot("box", sr_dfs, "Test", "Sample Rate (samples/s)") if sr_dfs else None
+    sr_dotplot = get_plot("dot", sr_dfs, "Increasing Time In Seconds", "Sample Rate (samples/s)") if sr_dfs else None
+    sr_lineplot = get_plot("line", sr_dfs, "Increasing Time", "Latency (us)") if sr_dfs else None
+    sr_histogram = get_plot("histogram", sr_dfs, "Increasing Time", "Latency (us)") if sr_dfs else None
+    sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (sample/s)", "F(x)") if sr_dfs else None
+    sr_transient = None
     
     total_samples_summary_table = generate_summary_table(total_samples_summaries)
-    total_samples_boxplot_fig = get_plot("box", total_samples_dfs, "Test", "Total Samples") if total_samples_dfs else None
-    total_samples_boxplot = dcc.Graph(figure=total_samples_boxplot_fig) if total_samples_boxplot_fig else None
-    total_samples_dotplot_fig = get_plot("dot", total_samples_dfs, "Increasing Time In Seconds", "Total Samples") if total_samples_dfs else None
-    total_samples_dotplot = dcc.Graph(figure=total_samples_dotplot_fig) if total_samples_dotplot_fig else None
+    total_samples_boxplot = get_plot("box", total_samples_dfs, "Test", "Total Samples") if total_samples_dfs else None
+    total_samples_dotplot = get_plot("dot", total_samples_dfs, "Increasing Time In Seconds", "Total Samples") if total_samples_dfs else None
+    total_samples_lineplot = get_plot("line", total_samples_dfs, "Increasing Time", "Latency (us)") if total_samples_dfs else None
+    total_samples_histogram = get_plot("histogram", total_samples_dfs, "Increasing Time", "Latency (us)") if total_samples_dfs else None
+    total_samples_cdf = get_plot("cdf", total_samples_dfs, "Total Samples", "F(x)") if total_samples_dfs else None
+    total_samples_transient = None
     
     lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
-    lost_samples_boxplot_fig = get_plot("box", lost_samples_dfs, "Test", "Lost Samples") if lost_samples_dfs else None
-    lost_samples_boxplot = dcc.Graph(figure=lost_samples_boxplot_fig) if lost_samples_boxplot_fig else None
-    lost_samples_dotplot_fig = get_plot("dot", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
-    lost_samples_dotplot = dcc.Graph(figure=lost_samples_dotplot_fig) if lost_samples_dotplot_fig else None
+    lost_samples_boxplot = get_plot("box", lost_samples_dfs, "Test", "Lost Samples") if lost_samples_dfs else None
+    lost_samples_dotplot = get_plot("dot", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
+    lost_samples_lineplot = get_plot("line", lost_samples_dfs, "Increasing Time", "Latency (us)") if lost_samples_dfs else None
+    lost_samples_histogram = get_plot("histogram", lost_samples_dfs, "Increasing Time", "Latency (us)") if lost_samples_dfs else None
+    lost_samples_cdf = get_plot("cdf", lost_samples_dfs, "Lost Samples", "F(x)") if lost_samples_dfs else None
+    lost_samples_transient = None
     
     log_timelines = html.Div(log_timelines)
         
-    return lat_summary_table, lat_boxplot, lat_dotplot, tp_summary_table, tp_boxplot, tp_dotplot, sample_rate_summary_table, sr_boxplot, sr_dotplot, total_samples_summary_table, total_samples_boxplot, total_samples_dotplot, lost_samples_summary_table, lost_samples_boxplot, lost_samples_dotplot, log_timelines
+    return lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_summary_table, total_samples_boxplot, total_samples_dotplot, total_samples_lineplot, total_samples_histogram, total_samples_cdf, total_samples_transient, lost_samples_summary_table, lost_samples_boxplot, lost_samples_dotplot, lost_samples_lineplot, lost_samples_histogram, lost_samples_cdf, lost_samples_transient, log_timelines
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")
