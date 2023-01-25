@@ -45,9 +45,13 @@ def populate_dropdown(testpath):
         Output("latency-summary-output", "children"),
         Output("latency-boxplot-output", "children"),
         Output("throughput-summary-output", "children"),
+        Output("throughput-boxplot-output", "children"),
         Output("sample-rate-summary-output", "children"),
+        Output("sample-rate-boxplot-output", "children"),
         Output("total-samples-summary-output", "children"),
+        Output("total-samples-boxplot-output", "children"),
         Output("lost-samples-summary-output", "children"),
+        Output("lost-samples-boxplot-output", "children"),
         Output("log-timeline-output", "children")
     ],
     Input("test-dropdown", "value")
@@ -55,7 +59,7 @@ def populate_dropdown(testpath):
 def populate_summary(tests):
     
     if tests is None:
-        return "", "", "", "", "", "", ""
+        return "", "", "", "", "", "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
@@ -65,6 +69,10 @@ def populate_summary(tests):
     log_timelines = []
     
     lat_dfs = []
+    tp_dfs = []
+    sr_dfs = []
+    total_samples_dfs = []
+    lost_samples_dfs = []
     
     for test in tests:
         lat_df = get_lat_df(test)
@@ -73,18 +81,22 @@ def populate_summary(tests):
         lat_summaries.append(lat_summary_stats)
         
         tp_df = get_df_from_subs("mbps", test)
+        tp_dfs.append(tp_df.rename(os.path.basename(test)))
         tp_summary_stats = get_summary_stats(tp_df, test)
         tp_summaries.append(tp_summary_stats)
         
         sample_rate_df = get_df_from_subs("samples/s", test)
+        sr_dfs.append(sample_rate_df.rename(os.path.basename(test)))
         sample_rate_summary_stats = get_summary_stats(sample_rate_df, test)
         sample_rate_summaries.append(sample_rate_summary_stats)
         
         total_samples_df = get_df_from_subs("total samples", test)
+        total_samples_dfs.append(total_samples_df.rename(os.path.basename(test)))
         total_samples_summary_stats = get_summary_stats(total_samples_df, test)
         total_samples_summaries.append(total_samples_summary_stats)
         
         lost_samples_df = get_df_from_subs("lost samples", test)
+        lost_samples_dfs.append(lost_samples_df.rename(os.path.basename(test)))
         lost_samples_summary_stats = get_summary_stats(lost_samples_df, test)
         lost_samples_summaries.append(lost_samples_summary_stats)
         
@@ -110,16 +122,36 @@ def populate_summary(tests):
         lat_boxplot = dcc.Graph(figure=lat_boxplot_fig)
     
     tp_summary_table = generate_summary_table(tp_summaries)
+    tp_boxplot_fig = get_boxplot(tp_dfs, "Throughput (mbps)") if tp_dfs else None
+    if tp_boxplot_fig is None:
+        tp_boxplot = ""
+    else:
+        tp_boxplot = dcc.Graph(figure=tp_boxplot_fig)
     
     sample_rate_summary_table = generate_summary_table(sample_rate_summaries)
+    sr_boxplot_fig = get_boxplot(sr_dfs, "Sample Rate (samples/s)") if sr_dfs else None
+    if sr_boxplot_fig is None:
+        sr_boxplot = ""
+    else:
+        sr_boxplot = dcc.Graph(figure=sr_boxplot_fig)
     
     total_samples_summary_table = generate_summary_table(total_samples_summaries)
+    total_samples_boxplot_fig = get_boxplot(total_samples_dfs, "Total Samples") if total_samples_dfs else None
+    if total_samples_boxplot_fig is None:
+        total_samples_boxplot = ""
+    else:
+        total_samples_boxplot = dcc.Graph(figure=total_samples_boxplot_fig)
     
     lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
+    lost_samples_boxplot_fig = get_boxplot(lost_samples_dfs, "Lost Samples") if lost_samples_dfs else None
+    if lost_samples_boxplot_fig is None:
+        lost_samples_boxplot = ""
+    else:
+        lost_samples_boxplot = dcc.Graph(figure=lost_samples_boxplot_fig)
     
     log_timelines = html.Div(log_timelines)
         
-    return lat_summary_table, lat_boxplot, tp_summary_table, sample_rate_summary_table, total_samples_summary_table, lost_samples_summary_table, log_timelines
+    return lat_summary_table, lat_boxplot, tp_summary_table, tp_boxplot, sample_rate_summary_table, sr_boxplot, total_samples_summary_table, total_samples_boxplot, lost_samples_summary_table, lost_samples_boxplot, log_timelines
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")
