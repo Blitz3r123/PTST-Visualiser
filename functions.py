@@ -8,36 +8,35 @@ from dash import Dash, html, dcc, Output, Input
 
 console = Console()
 
-def get_summary_stats(type, df, test):
-    if "latency" in type or "throughput" in type:
-        count = len(df.index)
-        mean = df.mean()
-        median = df.median()
-        variance = df.var()
-        std = df.std()
-        skew = df.skew()
-        df_range = df.max() - df.min()
-        lower_quartile = df.quantile(.25)
-        upper_quartile = df.quantile(.75)
-        interquartile_range = upper_quartile - lower_quartile
-        df_min = df.min()
-        df_max = df.max()
-        
-        summary_stats =  {
-            "test": test, 
-            "count": count, 
-            "mean": mean, 
-            "median": median, 
-            "variance": variance, 
-            "std": std, 
-            "skew": skew, 
-            "range": df_range, 
-            "lower_quartile": lower_quartile, 
-            "upper_quartile": upper_quartile, 
-            "interquartile_range": interquartile_range, 
-            "min": df_min,
-            "max": df_max
-        }
+def get_summary_stats(df, test):
+    count = len(df.index)
+    mean = df.mean()
+    median = df.median()
+    variance = df.var()
+    std = df.std()
+    skew = df.skew()
+    df_range = df.max() - df.min()
+    lower_quartile = df.quantile(.25)
+    upper_quartile = df.quantile(.75)
+    interquartile_range = upper_quartile - lower_quartile
+    df_min = df.min()
+    df_max = df.max()
+    
+    summary_stats =  {
+        "test": test, 
+        "count": count, 
+        "mean": mean, 
+        "median": median, 
+        "variance": variance, 
+        "std": std, 
+        "skew": skew, 
+        "range": df_range, 
+        "lower_quartile": lower_quartile, 
+        "upper_quartile": upper_quartile, 
+        "interquartile_range": interquartile_range, 
+        "min": df_min,
+        "max": df_max
+    }
         
         
     return summary_stats
@@ -70,7 +69,7 @@ def get_lat_df(test):
     
     return lat_df
 
-def get_tp_df(test):
+def get_df_from_subs(metric_heading, test):
     rundir = os.path.join(test, "run_1")
     csv_files = [file for file in os.listdir(rundir) if ".csv" in file]
     sub_files = [file for file in csv_files if "sub" in file]
@@ -84,11 +83,11 @@ def get_tp_df(test):
         
     sub_df = pd.concat(sub_dfs, axis=0, ignore_index=True)
     
-    tp_head = [x for x in sub_df.columns if "mbps" in x.lower()][0]
+    sub_head = [x for x in sub_df.columns if metric_heading in x.lower()][0]
     
-    tp_df = sub_df[tp_head]
+    sub_df = sub_df[sub_head]
     
-    return tp_df
+    return sub_df
 
 def get_cpu_log_df(test):
     logdir = os.path.join(test, "run_1", "logs")
@@ -138,3 +137,47 @@ def generate_summary_table(summaries):
             html.Tr([html.Td("max")] + [html.Td("{0:,.2f}".format(summary["max"])) for summary in summaries])
         ])
     ], bordered=True, hover=True)
+    
+def generate_toc_section(title, metric):
+    output = [
+        html.H5(title),
+        html.A(
+            dbc.ListGroupItem(title + " Summary Stats"),
+            href="#" +metric+ "-summary-title"
+        ),
+        html.A(
+            dbc.ListGroupItem(title + " Box Plots"),
+            href="#" +metric+ "-boxplot-output"
+        ),
+        html.A(
+            dbc.ListGroupItem(title + " Dot Plots"),
+            href="#" +metric+ "-dotplot-output"
+        ),
+        html.A(
+            dbc.ListGroupItem(title + " Histograms"),
+            href="#" +metric+ "-histogram-output"
+        ),
+        html.A(
+            dbc.ListGroupItem(title + " Empirical Cumulative Distribution Functions"),
+            href="#" +metric+ "-cdf-output"
+        ),
+        html.A(
+            dbc.ListGroupItem(title + " Transient Analyses"),
+            href="#" +metric+ "-transient-output"
+        )
+    ]
+    return output
+
+def generate_toc():
+    lists = []
+    lists.append(generate_toc_section("Latency", "latency"))
+    lists.append(generate_toc_section("Throughput", "throughput"))
+    lists.append(generate_toc_section("Sample Rate", "sample-rate"))
+    lists.append(generate_toc_section("Total Samples", "total-samples"))
+    lists.append(generate_toc_section("Lost Samples", "lost-samples"))
+    
+    output = []
+    for item in lists:
+        output = output + item
+        
+    return output

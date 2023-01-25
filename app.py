@@ -16,16 +16,31 @@ app.layout = dbc.Container([
         id="testdir-input"
     ),
     dcc.Dropdown([], multi=True, id="test-dropdown", placeholder="Select one or more tests"),
+    html.Div([dbc.ListGroup(
+        generate_toc()
+    )]),
     html.Div([
-        html.H1("Latency Summary Stats"),    
+        html.H1("Latency Summary Stats", id="latency-summary-title"),
         html.Div(id="latency-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
     ]),
     html.Div([
-        html.H1("Throughput Summary Stats"),    
+        html.H1("Throughput Summary Stats", id="throughput-summary-title"),
         html.Div(id="throughput-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
     ]),
     html.Div([
-        html.H1("Logs Timeline"),
+        html.H1("Sample Rate Summary Stats", id="sample-rate-summary-title"),
+        html.Div(id="sample-rate-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+    ]),
+    html.Div([
+        html.H1("Total Samples Summary Stats", id="total-samples-summary-title"),
+        html.Div(id="total-samples-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+    ]),
+    html.Div([
+        html.H1("Lost Samples Summary Stats", id="lost-samples-summary-title"),
+        html.Div(id="lost-samples-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+    ]),
+    html.Div([
+        html.H1("Logs Timeline", id="summary-title"),
         html.Div(id="log-timeline-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
     ])
 ], style={"marginTop": "2vh"}, fluid=True)
@@ -44,6 +59,9 @@ def populate_dropdown(testpath):
     [
         Output("latency-summary-output", "children"),
         Output("throughput-summary-output", "children"),
+        Output("sample-rate-summary-output", "children"),
+        Output("total-samples-summary-output", "children"),
+        Output("lost-samples-summary-output", "children"),
         Output("log-timeline-output", "children")
     ],
     Input("test-dropdown", "value")
@@ -51,19 +69,35 @@ def populate_dropdown(testpath):
 def populate_summary(tests):
     
     if tests is None:
-        return "", "", ""
+        return "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
+    sample_rate_summaries = []
+    total_samples_summaries = []
+    lost_samples_summaries = []
     log_timelines = []
+    
     for test in tests:
         lat_df = get_lat_df(test)
-        lat_summary_stats = get_summary_stats("latency", lat_df, test)
+        lat_summary_stats = get_summary_stats(lat_df, test)
         lat_summaries.append(lat_summary_stats)
         
-        tp_df = get_tp_df(test)
-        tp_summary_stats = get_summary_stats("throughput", tp_df, test)
+        tp_df = get_df_from_subs("mbps", test)
+        tp_summary_stats = get_summary_stats(tp_df, test)
         tp_summaries.append(tp_summary_stats)
+        
+        sample_rate_df = get_df_from_subs("samples/s", test)
+        sample_rate_summary_stats = get_summary_stats(sample_rate_df, test)
+        sample_rate_summaries.append(sample_rate_summary_stats)
+        
+        total_samples_df = get_df_from_subs("total samples", test)
+        total_samples_summary_stats = get_summary_stats(total_samples_df, test)
+        total_samples_summaries.append(total_samples_summary_stats)
+        
+        lost_samples_df = get_df_from_subs("lost samples", test)
+        lost_samples_summary_stats = get_summary_stats(lost_samples_df, test)
+        lost_samples_summaries.append(lost_samples_summary_stats)
         
         cpu_log_df = get_cpu_log_df(test)
         
@@ -81,10 +115,13 @@ def populate_summary(tests):
         
     lat_summary_table = generate_summary_table(lat_summaries)
     tp_summary_table = generate_summary_table(tp_summaries)
+    sample_rate_summary_table = generate_summary_table(sample_rate_summaries)
+    total_samples_summary_table = generate_summary_table(total_samples_summaries)
+    lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
         
     log_timelines = html.Div(log_timelines)
         
-    return lat_summary_table, tp_summary_table, log_timelines
+    return lat_summary_table, tp_summary_table, sample_rate_summary_table, total_samples_summary_table, lost_samples_summary_table, log_timelines
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")
