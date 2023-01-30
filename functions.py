@@ -323,6 +323,7 @@ def get_comb_output(tests):
     pubs = []
     subs = []
     reliabilities = []
+    unicasts = []
     durabilities = []
     lat_counts = []
     
@@ -335,14 +336,16 @@ def get_comb_output(tests):
         pubs.append(test[2])
         subs.append(test[3])
         reliabilities.append(test[4])
-        durabilities.append(test[5])
-        lat_counts.append(test[6])
+        unicasts.append(test[5])
+        durabilities.append(test[6])
+        lat_counts.append(test[7])
 
     durations = list(set(durations))
     datalens = list(set(datalens))
     pubs = list(set(pubs))
     subs = list(set(subs))
     reliabilities = list(set(reliabilities))
+    unicasts = list(set(unicasts))
     durabilities = list(set(durabilities))
     lat_counts = list(set(lat_counts))
 
@@ -379,6 +382,11 @@ def get_comb_output(tests):
         [ html.Td(", ".join(reliabilities)) ] + 
         [ html.Td( str(len(reliabilities)) ) ]
     )
+    unicasts = html.Tr(
+        [html.Td("unicasts")] + 
+        [ html.Td(", ".join(unicasts)) ] + 
+        [ html.Td( str(len(unicasts)) ) ]
+    )
     durabilities = html.Tr(
         [html.Td("durabilities")] + 
         [ html.Td(", ".join(durabilities)) ] + 
@@ -396,7 +404,7 @@ def get_comb_output(tests):
     # total_row = html.Tr([html.Td("Total"), html.Td(""), html.Td(total_combs)])
     
     table_body = [
-        html.Tbody([durations, datalens, pubs, subs, reliabilities, durabilities, lat_counts])
+        html.Tbody([durations, datalens, pubs, subs, reliabilities, unicasts, durabilities, lat_counts])
     ]
     
     return dbc.Table(table_header + table_body, bordered=True)
