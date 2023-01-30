@@ -16,6 +16,7 @@ app.layout = dbc.Container([
         id="testdir-input"
     ),
     dcc.Dropdown([], multi=True, id="test-dropdown", placeholder="Select one or more tests"),
+    html.Div(id="combinations-container"),
     html.Div([dbc.ListGroup(
         generate_toc()
     )]),
@@ -31,14 +32,23 @@ app.layout = dbc.Container([
 ], style={"marginTop": "2vh"}, fluid=True)
 
 @app.callback(
-    Output("test-dropdown", "options"),
+    [
+        Output("test-dropdown", "options"),    
+        Output("combinations-container", "children"),    
+    ],
     Input("testdir-input", "value")
 )
 def populate_dropdown(testpath):
+    output = []
+    comb_output = []
+    
     if os.path.exists(testpath):
-        return [os.path.join(testpath, x) for x in os.listdir(testpath)]
+        output = [os.path.join(testpath, x) for x in os.listdir(testpath)]
+        comb_output = get_comb_output(output)
     else:
-        return []
+        output = []
+        
+    return output, comb_output
 
 @app.callback(
     [

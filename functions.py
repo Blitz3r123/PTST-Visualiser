@@ -314,3 +314,87 @@ def get_transient_analysis(dfs, metric):
         figs.append(fig)
     
     return html.Div([dcc.Graph(figure=fig, style={"width": "100%", "height": "100%"}) for fig in figs], style={"maxWidth": "100vw", "overflowX" : "scroll", "height": "100vh"})
+
+def get_comb_output(tests):
+    durations = []
+    datalens = []
+    pubs = []
+    subs = []
+    reliabilities = []
+    durabilities = []
+    lat_counts = []
+    
+    for test in tests:
+        test = os.path.basename(test)
+        
+        test = test.split("_")
+        durations.append(test[0])
+        datalens.append(test[1])
+        pubs.append(test[2])
+        subs.append(test[3])
+        reliabilities.append(test[4])
+        durabilities.append(test[5])
+        lat_counts.append(test[6])
+
+    durations = list(set(durations))
+    datalens = list(set(datalens))
+    pubs = list(set(pubs))
+    subs = list(set(subs))
+    reliabilities = list(set(reliabilities))
+    durabilities = list(set(durabilities))
+    lat_counts = list(set(lat_counts))
+
+    table_header = [
+        html.Thead(html.Tr([
+            html.Th("Variable"),
+            html.Th("Values"),
+            html.Th("# of Values")
+        ]))
+    ]
+    
+    durations = html.Tr(
+        [html.Td("durations")] + 
+        [ html.Td(", ".join(durations)) ] + 
+        [ html.Td( str(len(durations)) ) ]
+    )
+    datalens = html.Tr(
+        [html.Td("datalens")] + 
+        [ html.Td(", ".join(datalens)) ] + 
+        [ html.Td( str(len(datalens)) ) ]
+    )
+    pubs = html.Tr(
+        [html.Td("pubs")] + 
+        [ html.Td(", ".join(pubs)) ] + 
+        [ html.Td( str(len(pubs)) ) ]
+    )
+    subs = html.Tr(
+        [html.Td("subs")] + 
+        [ html.Td(", ".join(subs)) ] + 
+        [ html.Td( str(len(subs)) ) ]
+    )
+    reliabilities = html.Tr(
+        [html.Td("reliabilities")] + 
+        [ html.Td(", ".join(reliabilities)) ] + 
+        [ html.Td( str(len(reliabilities)) ) ]
+    )
+    durabilities = html.Tr(
+        [html.Td("durabilities")] + 
+        [ html.Td(", ".join(durabilities)) ] + 
+        [ html.Td( str(len(durabilities)) ) ]
+    )
+    lat_counts = html.Tr(
+        [html.Td("lat_counts")] + 
+        [ html.Td(", ".join(lat_counts)) ] + 
+        [ html.Td( str(len(lat_counts)) ) ]
+    )
+    
+    # total_combs = len(durations) * len(datalens) * len(pubs) * len(subs) * len(reliabilities) * len(durabilities) * len(lat_counts)
+    # total_combs = "{:,.0f}".format(total_combs)
+    
+    # total_row = html.Tr([html.Td("Total"), html.Td(""), html.Td(total_combs)])
+    
+    table_body = [
+        html.Tbody([durations, datalens, pubs, subs, reliabilities, durabilities, lat_counts])
+    ]
+    
+    return dbc.Table(table_header + table_body, bordered=True)
