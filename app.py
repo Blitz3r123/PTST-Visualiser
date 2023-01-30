@@ -146,25 +146,25 @@ def populate_summary(tests):
     
     lat_summary_table = generate_summary_table(lat_summaries)
     lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (us)") if lat_dfs else None
-    lat_dotplot = get_plot("dot", lat_dfs, "Increasing Time", "Latency (us)") if lat_dfs else None
-    lat_lineplot = get_plot("line", lat_dfs, "Increasing Time", "Latency (us)") if lat_dfs else None
-    lat_histogram = get_plot("histogram", lat_dfs, "Increasing Time", "Latency (us)") if lat_dfs else None
+    lat_dotplot = get_plot("dot", lat_dfs, "Number of Observations", "Latency (us)") if lat_dfs else None
+    lat_lineplot = get_plot("line", lat_dfs, "Number of Observations", "Latency (us)") if lat_dfs else None
+    lat_histogram = get_plot("histogram", lat_dfs, "Latency (us)", "Number of Observations") if lat_dfs else None
     lat_cdf = get_plot("cdf", lat_dfs, "Latency (us)", "F(x)") if lat_dfs else None
     lat_transient = None
 
     tp_summary_table = generate_summary_table(tp_summaries)
     tp_boxplot = get_plot("box", tp_dfs, "Test", "Throughput (mbps)") if tp_dfs else None
     tp_dotplot = get_plot("dot", tp_dfs, "Increasing Time In Seconds", "Throughput (mbps)") if tp_dfs else None
-    tp_lineplot = get_plot("line", tp_dfs, "Increasing Time", "Latency (us)") if tp_dfs else None
-    tp_histogram = get_plot("histogram", tp_dfs, "Increasing Time", "Latency (us)") if tp_dfs else None
+    tp_lineplot = get_plot("line", tp_dfs, "Increasing Time In Seconds", "Throughput (mbps)") if tp_dfs else None
+    tp_histogram = get_plot("histogram", tp_dfs, "Throughput (mbps)", "Number of Observations") if tp_dfs else None
     tp_cdf = get_plot("cdf", tp_dfs, "Throughput (mbps)", "F(x)") if tp_dfs else None
     tp_transient = None
     
     sample_rate_summary_table = generate_summary_table(sample_rate_summaries)
     sr_boxplot = get_plot("box", sr_dfs, "Test", "Sample Rate (samples/s)") if sr_dfs else None
     sr_dotplot = get_plot("dot", sr_dfs, "Increasing Time In Seconds", "Sample Rate (samples/s)") if sr_dfs else None
-    sr_lineplot = get_plot("line", sr_dfs, "Increasing Time", "Latency (us)") if sr_dfs else None
-    sr_histogram = get_plot("histogram", sr_dfs, "Increasing Time", "Latency (us)") if sr_dfs else None
+    sr_lineplot = get_plot("line", sr_dfs, "Increasing Time", "Sample Rate (samples/s)") if sr_dfs else None
+    sr_histogram = get_plot("histogram", sr_dfs, "Increasing Time", "Sample Rate (samples/s)") if sr_dfs else None
     sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (sample/s)", "F(x)") if sr_dfs else None
     sr_transient = None
     
@@ -179,8 +179,8 @@ def populate_summary(tests):
     lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
     lost_samples_boxplot = get_plot("box", lost_samples_dfs, "Test", "Lost Samples") if lost_samples_dfs else None
     lost_samples_dotplot = get_plot("dot", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
-    lost_samples_lineplot = get_plot("line", lost_samples_dfs, "Increasing Time", "Latency (us)") if lost_samples_dfs else None
-    lost_samples_histogram = get_plot("histogram", lost_samples_dfs, "Increasing Time", "Latency (us)") if lost_samples_dfs else None
+    lost_samples_lineplot = get_plot("line", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
+    lost_samples_histogram = get_plot("histogram", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
     lost_samples_cdf = get_plot("cdf", lost_samples_dfs, "Lost Samples", "F(x)") if lost_samples_dfs else None
     lost_samples_transient = None
     

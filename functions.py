@@ -2,9 +2,11 @@ import os
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 from pprint import pprint
 from rich.console import Console
+from statistics import NormalDist
 from dash import Dash, html, dcc, Output, Input
 
 console = Console()
@@ -80,15 +82,18 @@ def get_df_from_subs(metric_heading, test):
     
     for file in sub_files:
         df = pd.read_csv(file, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
+        sub_head = [x for x in df.columns if metric_heading in x.lower()][0]
+        df = df[sub_head]
+        df.rename(os.path.basename(file).replace(".csv", ""), inplace=True)
         sub_dfs.append(df)
         
-    sub_df = pd.concat(sub_dfs, axis=0, ignore_index=True)
+    sub_df = pd.concat(sub_dfs, axis=1)
     
-    sub_head = [x for x in sub_df.columns if metric_heading in x.lower()][0]
+    # ? Add up all columns to create total column
+    sub_df["total_" + metric_heading] = sub_df[list(sub_df.columns)].sum(axis=1)
     
-    sub_df = sub_df[sub_head]
-    
-    return sub_df
+    # ? Take off the last number because its an average produced by perftest
+    return sub_df["total_" + metric_heading][:-1]
 
 def get_cpu_log_df(test):
     logdir = os.path.join(test, "run_1", "logs")
@@ -213,6 +218,12 @@ def generate_metric_output_content(title, metric):
         html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
     ])
     
+def confidence_interval(data, confidence=0.95):
+  dist = NormalDist.from_samples(data)
+  z = NormalDist().inv_cdf((1 + confidence) / 2.)
+  h = dist.stdev * z / ((len(data) - 1) ** .5)
+  return h
+    
 def get_plot(type, dfs, x_title, y_title):
     df = pd.concat(dfs, axis=1)
 
@@ -225,7 +236,28 @@ def get_plot(type, dfs, x_title, y_title):
     elif "histogram" in type:
         fig = px.histogram(df)
     elif "cdf" in type:
+        # conf_interval = confidence_interval(df.squeeze(), 0.95)
+        
         fig = px.ecdf(df)
+
+        # fig.add_traces([
+        #     px.line(
+        #         x = df.index.sort_values(), 
+        #         y=df-conf_interval
+        #     ),
+        #     px.line(
+        #         x = df.index.sort_values(), 
+        #         y=df-conf_interval
+        #     )
+        # ])
+        
+        # fig.update_traces(
+        #     name="95% Confidence Interval",
+        #     line_color="rgba(0, 0, 0, 0)",
+        #     fill="tonexty",
+        #     fillcolor="rgba(255, 0, 0, 0.2)",
+        #     showlegend=False
+        # )
 
     fig.update_layout(xaxis_title=x_title, yaxis_title=y_title)
     
