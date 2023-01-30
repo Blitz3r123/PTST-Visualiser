@@ -150,7 +150,7 @@ def populate_summary(tests):
     lat_lineplot = get_plot("line", lat_dfs, "Number of Observations", "Latency (us)") if lat_dfs else None
     lat_histogram = get_plot("histogram", lat_dfs, "Latency (us)", "Number of Observations") if lat_dfs else None
     lat_cdf = get_plot("cdf", lat_dfs, "Latency (us)", "F(x)") if lat_dfs else None
-    lat_transient = None
+    lat_transient = get_transient_analysis(lat_dfs , "Latency (us)")
 
     tp_summary_table = generate_summary_table(tp_summaries)
     tp_boxplot = get_plot("box", tp_dfs, "Test", "Total Throughput (mbps)") if tp_dfs else None

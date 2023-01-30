@@ -5,6 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from pprint import pprint
+from plotly.subplots import make_subplots
 from rich.console import Console
 from statistics import NormalDist
 from dash import Dash, html, dcc, Output, Input
@@ -236,29 +237,80 @@ def get_plot(type, dfs, x_title, y_title):
     elif "histogram" in type:
         fig = px.histogram(df)
     elif "cdf" in type:
-        # conf_interval = confidence_interval(df.squeeze(), 0.95)
-        
         fig = px.ecdf(df)
-
-        # fig.add_traces([
-        #     px.line(
-        #         x = df.index.sort_values(), 
-        #         y=df-conf_interval
-        #     ),
-        #     px.line(
-        #         x = df.index.sort_values(), 
-        #         y=df-conf_interval
-        #     )
-        # ])
-        
-        # fig.update_traces(
-        #     name="95% Confidence Interval",
-        #     line_color="rgba(0, 0, 0, 0)",
-        #     fill="tonexty",
-        #     fillcolor="rgba(255, 0, 0, 0.2)",
-        #     showlegend=False
-        # )
 
     fig.update_layout(xaxis_title=x_title, yaxis_title=y_title)
     
     return dcc.Graph(figure=fig)
+
+def get_transient_analysis(dfs, metric):
+    figs = []
+    
+    for df in dfs:
+        fig = make_subplots(
+            rows=2, 
+            cols=6, 
+            specs=[
+                [{"colspan": 4, "rowspan": 2}, None, None, None, None, {}],
+                [None, None, None, None, None, {}]
+            ],
+            start_cell="top-left",
+            horizontal_spacing=0,
+            subplot_titles=("Line Plot", "Histograms", "CDFs")
+        )
+        
+        fig.add_trace(
+            go.Scatter(y=df, x=df.index),
+            row=1, col=1
+        )
+        fig.add_vline(x=len(df.index) / 2, row=1, col=1, line_dash="dash", line_width=3)
+        # ? Big "A"
+        fig.add_annotation(
+            x=len(df.index) * .25, 
+            y=df.max() * .5, 
+            text="A", 
+            row=1, col=1, 
+            showarrow=False
+        )
+        # ? Big "B"
+        fig.add_annotation(
+            x=len(df.index) * .75, 
+            y=df.max() * .5, 
+            text="B", 
+            row=1, col=1, 
+            showarrow=False
+        )
+        fig.update_annotations(font_size=40, selector={"text": "A"})
+        fig.update_annotations(font_size=40, selector={"text": "B"})
+        
+        mid_point = int(len(df.index) *.5)
+        
+        df_a = df.iloc[:mid_point].rename("A").reset_index(drop=True)
+        df_b = df.iloc[mid_point:].rename("B").reset_index(drop=True)
+        
+        combined_df = pd.concat([df_a, df_b], axis=1).reset_index().iloc[:, 1:]
+                
+        fig.add_trace(
+            go.Histogram(x=df_a, name="A"),
+            row=1, col=6
+        ),
+        fig.add_trace(
+            go.Histogram(x=df_b, name="B"),
+            row=1, col=6
+        )
+        
+        fig.add_traces(
+            [
+                px.ecdf(combined_df).data[0],
+                px.ecdf(combined_df).data[1]
+            ],
+            rows=[2, 2], cols=[6, 6]
+        )
+        
+        fig.update_layout(
+            title=df.name
+        )
+        
+        figs.append(fig)
+    
+    return html.Div([dcc.Graph(figure=fig, style={"width": "100%", "height": "100%"}) for fig in figs], style={"maxWidth": "100vw", "overflowX" : "scroll", "height": "100vh"})
