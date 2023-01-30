@@ -155,12 +155,12 @@ def populate_summary(tests):
         log_timelines.append(log_timeline)
     
     lat_summary_table = generate_summary_table(lat_summaries)
-    lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (us)") if lat_dfs else None
-    lat_dotplot = get_plot("dot", lat_dfs, "Number of Observations", "Latency (us)") if lat_dfs else None
-    lat_lineplot = get_plot("line", lat_dfs, "Number of Observations", "Latency (us)") if lat_dfs else None
-    lat_histogram = get_plot("histogram", lat_dfs, "Latency (us)", "Number of Observations") if lat_dfs else None
-    lat_cdf = get_plot("cdf", lat_dfs, "Latency (us)", "F(x)") if lat_dfs else None
-    lat_transient = get_transient_analysis(lat_dfs , "Latency (us)")
+    lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (ms)") if lat_dfs else None
+    lat_dotplot = get_plot("dot", lat_dfs, "Number of Observations", "Latency (ms)") if lat_dfs else None
+    lat_lineplot = get_plot("line", lat_dfs, "Number of Observations", "Latency (ms)") if lat_dfs else None
+    lat_histogram = get_plot("histogram", lat_dfs, "Latency (ms)", "Number of Observations") if lat_dfs else None
+    lat_cdf = get_plot("cdf", lat_dfs, "Latency (ms)", "F(x)") if lat_dfs else None
+    lat_transient = get_transient_analysis(lat_dfs , "Latency (ms)")
 
     tp_summary_table = generate_summary_table(tp_summaries)
     tp_boxplot = get_plot("box", tp_dfs, "Test", "Total Throughput (mbps)") if tp_dfs else None

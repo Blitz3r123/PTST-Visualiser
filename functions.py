@@ -71,6 +71,8 @@ def get_lat_df(test):
     except Exception as e:
         return
     
+    lat_df = lat_df.loc[:].div(1000)
+    
     return lat_df
 
 def get_df_from_subs(metric_heading, test):
