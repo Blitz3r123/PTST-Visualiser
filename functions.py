@@ -506,6 +506,7 @@ def get_total_samples_received_summary_table(total_dfs, lost_dfs):
             html.Th("Test"),
             html.Th("Total Samples Received"),
             html.Th("Lost Samples"),
+            html.Th("Total Samples"),
             html.Th("Lost Samples (%)")
         ]))
     ]
@@ -513,14 +514,17 @@ def get_total_samples_received_summary_table(total_dfs, lost_dfs):
     rows = []
     
     for test in test_names:
-        total_samples_received = total_df[test].iloc[-1]
-        lost_samples = lost_df[test].iloc[-1]
-        lost_sample_percent = (lost_samples / total_samples_received) * 100
+        total_samples_received = total_df[test].max()
+        lost_samples = lost_df[test].max()
+        total_samples = lost_samples + total_samples_received
+        lost_sample_percent = (lost_samples / total_samples) * 100
+        
         
         rows.append(html.Tr([
             html.Td(test),
             html.Td("{:,.0f}".format(total_samples_received)),
             html.Td("{:,.0f}".format(lost_samples)),
+            html.Td("{:,.0f}".format(total_samples)),
             html.Td("{:,.0f}".format(lost_sample_percent)),
         ]))
         
