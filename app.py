@@ -195,15 +195,15 @@ def populate_summary(tests, testdir):
     tp_lineplot = get_plot("line", tp_dfs, "Increasing Time In Seconds", "Total Throughput (mbps)") if tp_dfs else None
     tp_histogram = get_plot("histogram", tp_dfs, "Total Throughput (mbps)", "Number of Observations") if tp_dfs else None
     tp_cdf = get_plot("cdf", tp_dfs, "Total Throughput (mbps)", "F(x)") if tp_dfs else None
-    tp_transient = None
+    tp_transient = get_transient_analysis(tp_dfs, "Total Throughput (mbps)")
     
     sample_rate_summary_table = generate_summary_table(sample_rate_summaries)
     sr_boxplot = get_plot("box", sr_dfs, "Test", "Sample Rate (samples/s)") if sr_dfs else None
     sr_dotplot = get_plot("dot", sr_dfs, "Increasing Time In Seconds", "Sample Rate (samples/s)") if sr_dfs else None
     sr_lineplot = get_plot("line", sr_dfs, "Increasing Time In Seconds", "Sample Rate (samples/s)") if sr_dfs else None
     sr_histogram = get_plot("histogram", sr_dfs, "Sample Rate (samples/s)", "Number of Observations") if sr_dfs else None
-    sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (sample/s)", "F(x)") if sr_dfs else None
-    sr_transient = None
+    sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (samples/s)", "F(x)") if sr_dfs else None
+    sr_transient = get_transient_analysis(sr_dfs, "Sample Rates (samples/s)")
     
     # total_samples_received_summary_table = generate_summary_table(total_samples_received_summaries)
     total_samples_received_summary_table = get_total_samples_received_summary_table(total_samples_received_dfs, lost_samples_dfs)
