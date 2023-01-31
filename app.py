@@ -205,7 +205,8 @@ def populate_summary(tests, testdir):
     sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (sample/s)", "F(x)") if sr_dfs else None
     sr_transient = None
     
-    total_samples_summary_table = generate_summary_table(total_samples_summaries)
+    # total_samples_summary_table = generate_summary_table(total_samples_summaries)
+    total_samples_summary_table = get_total_samples_summary_table(total_samples_dfs, lost_samples_dfs)
     # total_samples_boxplot = get_plot("box", total_samples_dfs, "Test", "Total Samples") if total_samples_dfs else None
     total_samples_boxplot = ""
     total_samples_dotplot = get_plot("dot", total_samples_dfs, "Increasing Time In Seconds", "Total Samples") if total_samples_dfs else None

@@ -96,6 +96,7 @@ def get_df_from_subs(metric_heading, test):
     sub_df["total_" + metric_heading] = sub_df[list(sub_df.columns)].sum(axis=1)
     
     # ? Take off the last number because its an average produced by perftest
+    sub_df = sub_df[:-2]
     return sub_df["total_" + metric_heading][:-1]
 
 def get_cpu_log_df(test):
@@ -151,7 +152,8 @@ def generate_toc_section(title, metric):
     summary_link = dbc.ListGroupItem(
         title + " Summary Stats",
         href="#" +metric+ "-summary-title",
-        style={"marginTop": "0.5vh"}
+        external_link=True,
+        style={"marginTop": "0.5vh"},
     )
 
     if "total-samples" in metric:
@@ -162,30 +164,35 @@ def generate_toc_section(title, metric):
         boxplot_link = dbc.ListGroupItem(
             title + " Box Plots",
             href="#" +metric+ "-boxplot-title",
+            external_link=True,
             style={"marginTop": "0.5vh"}
         )
     
     dotplot_link = dbc.ListGroupItem(
         title + " Dot Plots",
         href="#" +metric+ "-dotplot-title",
-        style={"marginTop": "0.5vh"}
+        external_link=True,
+        style={"marginTop": "0.5vh"},
     )
     
     lineplot_link = dbc.ListGroupItem(
         title + " Line Plots",
         href="#" +metric+ "-lineplot-title",
+        external_link=True,
         style={"marginTop": "0.5vh"}
     )
     
     histogram_link = dbc.ListGroupItem(
         title + " Histograms",
         href="#" +metric+ "-histogram-title",
+        external_link=True,
         style={"marginTop": "0.5vh"}
     )
     
     cdf_link = dbc.ListGroupItem(
         title + " Empirical Cumulative Distribution Functions",
         href="#" +metric+ "-cdf-title",
+        external_link=True,
         style={"marginTop": "0.5vh"}
     )
     
@@ -197,6 +204,7 @@ def generate_toc_section(title, metric):
         transient_link = dbc.ListGroupItem(
             title + " Transient Analyses",
             href="#" +metric+ "-transient-title",
+            external_link=True,
             style={"marginTop": "0.5vh"}
         )
     
@@ -474,3 +482,36 @@ def get_comb_output(tests):
         html.H3("Captured Settings", style={"marginTop": "2vh"}),
         dbc.Table(table_header + table_body, bordered=True)
     ])
+    
+def get_total_samples_summary_table(total_dfs, lost_dfs):
+    test_names = [df.name for df in total_dfs]
+    
+    total_df = pd.concat(total_dfs, axis=1)
+    lost_df = pd.concat(lost_dfs, axis=1)
+    
+    table_header = [
+        html.Thead(html.Tr([
+            html.Th("Test"),
+            html.Th("Total Samples"),
+            html.Th("Lost Samples"),
+            html.Th("Lost Samples (%)")
+        ]))
+    ]
+    
+    rows = []
+    
+    for test in test_names:
+        total_samples = total_df[test].iloc[-1]
+        lost_samples = lost_df[test].iloc[-1]
+        lost_sample_percent = (lost_samples / total_samples) * 100
+        
+        rows.append(html.Tr([
+            html.Td(test),
+            html.Td("{:,.0f}".format(total_samples)),
+            html.Td("{:,.0f}".format(lost_samples)),
+            html.Td("{:,.0f}".format(lost_sample_percent)),
+        ]))
+        
+    table_body = [html.Tbody(rows)]
+    
+    return dbc.Table(table_header + table_body, bordered=True)
