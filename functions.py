@@ -65,6 +65,7 @@ def get_lat_df(test):
     
     lat_df = pd.read_csv(pubdir, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
     
+    
     try:
         lat_head = [col for col in lat_df.columns if "latency" in col.lower()][0]
         lat_df = lat_df[lat_head]
@@ -156,7 +157,7 @@ def generate_toc_section(title, metric):
         style={"marginTop": "0.5vh"},
     )
 
-    if "total-samples" in metric:
+    if "total-samples-received" in metric:
         boxplot_link = ""
     elif "lost-samples" in metric:
         boxplot_link = ""
@@ -196,7 +197,7 @@ def generate_toc_section(title, metric):
         style={"marginTop": "0.5vh"}
     )
     
-    if "total-samples" in metric:
+    if "total-samples-received" in metric:
         transient_link = ""
     elif "lost-samples" in metric:
         transient_link = ""
@@ -225,7 +226,7 @@ def generate_toc():
     lists.append(generate_toc_section("Latency", "latency"))
     lists.append(generate_toc_section("Throughput", "throughput"))
     lists.append(generate_toc_section("Sample Rate", "sample-rate"))
-    lists.append(generate_toc_section("Total Samples", "total-samples"))
+    lists.append(generate_toc_section("Total Samples Received", "total-samples-received"))
     lists.append(generate_toc_section("Lost Samples", "lost-samples"))
     
     output = []
@@ -242,7 +243,7 @@ def generate_metric_output_content(title, metric):
         html.Div(id=metric + "-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
     ])
     
-    if "total-samples" in metric:
+    if "total-samples-received" in metric:
         boxplot_output = html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
     elif "lost-samples" in metric:
         boxplot_output = html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
@@ -272,7 +273,7 @@ def generate_metric_output_content(title, metric):
         html.Div(id=metric + "-cdf-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
     ])
     
-    if "total-samples" in metric:
+    if "total-samples-received" in metric:
         transient_output = html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
     elif "lost-samples" in metric:
         transient_output = html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
@@ -280,7 +281,7 @@ def generate_metric_output_content(title, metric):
         transient_output = html.Div([
             html.H3(title + " Transient Analyses", id=metric + "-transient-title"),
             html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
-        ])  
+        ])
     
     return html.Div([
         summary_output,
@@ -483,7 +484,7 @@ def get_comb_output(tests):
         dbc.Table(table_header + table_body, bordered=True)
     ])
     
-def get_total_samples_summary_table(total_dfs, lost_dfs):
+def get_total_samples_received_summary_table(total_dfs, lost_dfs):
     test_names = [df.name for df in total_dfs]
     
     total_df = pd.concat(total_dfs, axis=1)
@@ -492,7 +493,7 @@ def get_total_samples_summary_table(total_dfs, lost_dfs):
     table_header = [
         html.Thead(html.Tr([
             html.Th("Test"),
-            html.Th("Total Samples"),
+            html.Th("Total Samples Received"),
             html.Th("Lost Samples"),
             html.Th("Lost Samples (%)")
         ]))
@@ -501,13 +502,13 @@ def get_total_samples_summary_table(total_dfs, lost_dfs):
     rows = []
     
     for test in test_names:
-        total_samples = total_df[test].iloc[-1]
+        total_samples_received = total_df[test].iloc[-1]
         lost_samples = lost_df[test].iloc[-1]
-        lost_sample_percent = (lost_samples / total_samples) * 100
+        lost_sample_percent = (lost_samples / total_samples_received) * 100
         
         rows.append(html.Tr([
             html.Td(test),
-            html.Td("{:,.0f}".format(total_samples)),
+            html.Td("{:,.0f}".format(total_samples_received)),
             html.Td("{:,.0f}".format(lost_samples)),
             html.Td("{:,.0f}".format(lost_sample_percent)),
         ]))
