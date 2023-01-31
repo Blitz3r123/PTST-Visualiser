@@ -77,6 +77,8 @@ def get_lat_df(test):
     return lat_df
 
 def get_df_from_subs(metric_heading, test):
+    if "total samples received" in metric_heading:
+        metric_heading = "total samples"
     rundir = os.path.join(test, "run_1")
     csv_files = [file for file in os.listdir(rundir) if ".csv" in file]
     sub_files = [file for file in csv_files if "sub" in file]
