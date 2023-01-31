@@ -152,12 +152,15 @@ def generate_summary_table(summaries):
     ], bordered=True, hover=True)
     
 def generate_toc_section(title, metric):
-    summary_link = dbc.ListGroupItem(
-        title + " Summary Stats",
-        href="#" +metric+ "-summary-title",
-        external_link=True,
-        style={"marginTop": "0.5vh"},
-    )
+    if "lost-samples" in metric:
+        summary_link = ""
+    else:
+        summary_link = dbc.ListGroupItem(
+            title + " Summary Stats",
+            href="#" +metric+ "-summary-title",
+            external_link=True,
+            style={"marginTop": "0.5vh"},   
+        )
 
     if "total-samples-received" in metric:
         boxplot_link = ""
@@ -240,10 +243,13 @@ def generate_toc():
     return output
 
 def generate_metric_output_content(title, metric):
-    summary_output = html.Div([
-        html.H3(title + " Summary Stats", id=metric + "-summary-title"),
-        html.Div(id=metric + "-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ])
+    if "lost-samples" in metric:
+        summary_output = html.Div(id=metric + "-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    else:
+        summary_output = html.Div([
+            html.H3(title + " Summary Stats", id=metric + "-summary-title"),
+            html.Div(id=metric + "-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        ])
     
     if "total-samples-received" in metric:
         boxplot_output = html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"})

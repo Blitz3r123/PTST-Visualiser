@@ -205,7 +205,6 @@ def populate_summary(tests, testdir):
     sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (samples/s)", "F(x)") if sr_dfs else None
     sr_transient = get_transient_analysis(sr_dfs, "Sample Rates (samples/s)")
     
-    # total_samples_received_summary_table = generate_summary_table(total_samples_received_summaries)
     total_samples_received_summary_table = get_total_samples_received_summary_table(total_samples_received_dfs, lost_samples_dfs)
     # total_samples_received_boxplot = get_plot("box", total_samples_received_dfs, "Test", "Total Samples Received") if total_samples_received_dfs else None
     total_samples_received_boxplot = ""
@@ -215,7 +214,8 @@ def populate_summary(tests, testdir):
     total_samples_received_cdf = get_plot("cdf", total_samples_received_dfs, "Total Samples Received", "F(x)") if total_samples_received_dfs else None
     total_samples_received_transient = None
     
-    lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
+    # lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
+    lost_samples_summary_table = ""
     # lost_samples_boxplot = get_plot("box", lost_samples_dfs, "Test", "Lost Samples") if lost_samples_dfs else None
     lost_samples_boxplot = ""
     lost_samples_dotplot = get_plot("dot", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
