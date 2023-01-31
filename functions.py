@@ -148,36 +148,60 @@ def generate_summary_table(summaries):
     ], bordered=True, hover=True)
     
 def generate_toc_section(title, metric):
-    output = [
-        html.H5(title),
-        html.A(
-            dbc.ListGroupItem(title + " Summary Stats"),
-            href="#" +metric+ "-summary-title"
-        ),
-        html.A(
+    summary_link = html.A(
+        dbc.ListGroupItem(title + " Summary Stats"),
+        href="#" +metric+ "-summary-title"
+    )
+
+    if "total-samples" in metric:
+        boxplot_link = ""
+    elif "lost-samples" in metric:
+        boxplot_link = ""
+    else:
+        boxplot_link = html.A(
             dbc.ListGroupItem(title + " Box Plots"),
             href="#" +metric+ "-boxplot-title"
-        ),
-        html.A(
-            dbc.ListGroupItem(title + " Dot Plots"),
-            href="#" +metric+ "-dotplot-title"
-        ),
-        html.A(
-            dbc.ListGroupItem(title + " Line Plots"),
-            href="#" +metric+ "-lineplot-title"
-        ),
-        html.A(
-            dbc.ListGroupItem(title + " Histograms"),
-            href="#" +metric+ "-histogram-title"
-        ),
-        html.A(
-            dbc.ListGroupItem(title + " Empirical Cumulative Distribution Functions"),
-            href="#" +metric+ "-cdf-title"
-        ),
-        html.A(
+        )
+    
+    dotplot_link = html.A(
+        dbc.ListGroupItem(title + " Dot Plots"),
+        href="#" +metric+ "-dotplot-title"
+    )
+    
+    lineplot_link = html.A(
+        dbc.ListGroupItem(title + " Line Plots"),
+        href="#" +metric+ "-lineplot-title"
+    )
+    
+    histogram_link = html.A(
+        dbc.ListGroupItem(title + " Histograms"),
+        href="#" +metric+ "-histogram-title"
+    )
+    
+    cdf_link = html.A(
+        dbc.ListGroupItem(title + " Empirical Cumulative Distribution Functions"),
+        href="#" +metric+ "-cdf-title"
+    )
+    
+    if "total-samples" in metric:
+        transient_link = ""
+    elif "lost-samples" in metric:
+        transient_link = ""
+    else:
+        transient_link = html.A(
             dbc.ListGroupItem(title + " Transient Analyses"),
             href="#" +metric+ "-transient-title"
         )
+    
+    output = [
+        html.H5(title),
+        summary_link,
+        boxplot_link,
+        dotplot_link,
+        lineplot_link,
+        histogram_link,
+        cdf_link,
+        transient_link
     ]
     return output
 
@@ -198,27 +222,59 @@ def generate_toc():
     return output
 
 def generate_metric_output_content(title, metric):
-    return html.Div([
+    summary_output = html.Div([
         html.H3(title + " Summary Stats", id=metric + "-summary-title"),
         html.Div(id=metric + "-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-        
-        html.H3(title + " Box Plots", id=metric + "-boxplot-title"),
-        html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-        
+    ])
+    
+    if "total-samples" in metric:
+        boxplot_output = html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    elif "lost-samples" in metric:
+        boxplot_output = html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    else:
+        boxplot_output = html.Div([
+            html.H3(title + " Box Plots", id=metric + "-boxplot-title"),
+            html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        ])
+    
+    lineplot_output = html.Div([
         html.H3(title + " Line Plots", id=metric + "-lineplot-title"),
         html.Div(id=metric + "-lineplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-        
+    ])
+    
+    dotplot_output = html.Div([
         html.H3(title + " Dot Plots", id=metric + "-dotplot-title"),
         html.Div(id=metric + "-dotplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-        
+    ])
+    
+    histogram_output = html.Div([
         html.H3(title + " Histograms", id=metric + "-histogram-title"),
         html.Div(id=metric + "-histogram-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-        
+    ])
+    
+    cdf_output = html.Div([
         html.H3(title + " Empirical Cumulative Distribution Functions", id=metric + "-cdf-title"),
         html.Div(id=metric + "-cdf-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-        
-        html.H3(title + " Transient Analyses", id=metric + "-transient-title"),
-        html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    ])
+    
+    if "total-samples" in metric:
+        transient_output = html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    elif "lost-samples" in metric:
+        transient_output = html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    else:
+        transient_output = html.Div([
+            html.H3(title + " Transient Analyses", id=metric + "-transient-title"),
+            html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+        ])  
+    
+    return html.Div([
+        summary_output,
+        boxplot_output,
+        lineplot_output,
+        dotplot_output,
+        histogram_output,
+        cdf_output,
+        transient_output
     ])
     
 def confidence_interval(data, confidence=0.95):
@@ -358,42 +414,42 @@ def get_comb_output(tests):
     ]
     
     durations = html.Tr(
-        [html.Td("durations")] + 
+        [html.Td("Durations")] + 
         [ html.Td(", ".join(durations)) ] + 
         [ html.Td( str(len(durations)) ) ]
     )
     datalens = html.Tr(
-        [html.Td("datalens")] + 
+        [html.Td("Data Lengths")] + 
         [ html.Td(", ".join(datalens)) ] + 
         [ html.Td( str(len(datalens)) ) ]
     )
     pubs = html.Tr(
-        [html.Td("pubs")] + 
+        [html.Td("Pubs")] + 
         [ html.Td(", ".join(pubs)) ] + 
         [ html.Td( str(len(pubs)) ) ]
     )
     subs = html.Tr(
-        [html.Td("subs")] + 
+        [html.Td("Subs")] + 
         [ html.Td(", ".join(subs)) ] + 
         [ html.Td( str(len(subs)) ) ]
     )
     reliabilities = html.Tr(
-        [html.Td("reliabilities")] + 
+        [html.Td("Reliabilities")] + 
         [ html.Td(", ".join(reliabilities)) ] + 
         [ html.Td( str(len(reliabilities)) ) ]
     )
     unicasts = html.Tr(
-        [html.Td("unicasts")] + 
+        [html.Td("Unicasts")] + 
         [ html.Td(", ".join(unicasts)) ] + 
         [ html.Td( str(len(unicasts)) ) ]
     )
     durabilities = html.Tr(
-        [html.Td("durabilities")] + 
+        [html.Td("Durabilities")] + 
         [ html.Td(", ".join(durabilities)) ] + 
         [ html.Td( str(len(durabilities)) ) ]
     )
     lat_counts = html.Tr(
-        [html.Td("lat_counts")] + 
+        [html.Td("Latency Counts")] + 
         [ html.Td(", ".join(lat_counts)) ] + 
         [ html.Td( str(len(lat_counts)) ) ]
     )
