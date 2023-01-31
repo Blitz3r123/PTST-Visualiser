@@ -358,6 +358,8 @@ def get_transient_analysis(dfs, metric):
         )
         fig.update_annotations(font_size=40, selector={"text": "A"})
         fig.update_annotations(font_size=40, selector={"text": "B"})
+        fig['layout']['xaxis'].update(title_text="Number of Observations")
+        fig['layout']['yaxis'].update(title_text=metric)
         
         mid_point = int(len(df.index) *.5)
         
@@ -374,6 +376,8 @@ def get_transient_analysis(dfs, metric):
             go.Histogram(x=df_b, name="B"),
             row=1, col=6
         )
+        fig['layout']['xaxis2'].update(title_text=metric)
+        fig['layout']['yaxis2'].update(title_text="Number of Observations")
         
         fig.add_traces(
             [
@@ -382,6 +386,8 @@ def get_transient_analysis(dfs, metric):
             ],
             rows=[2, 2], cols=[6, 6]
         )
+        fig['layout']['xaxis3'].update(title_text=metric)
+        fig['layout']['yaxis3'].update(title_text="F(x)")
         
         fig.update_layout(
             title=df.name
@@ -487,6 +493,9 @@ def get_comb_output(tests):
     ])
     
 def get_total_samples_received_summary_table(total_dfs, lost_dfs):
+    if len(total_dfs) == 0:
+        return ""
+    
     test_names = [df.name for df in total_dfs]
     
     total_df = pd.concat(total_dfs, axis=1)
