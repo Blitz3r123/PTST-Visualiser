@@ -10,31 +10,53 @@ from dash import Dash, html, dcc, Output, Input
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = dbc.Container([
-    dbc.Input(
-        value="C:/Users/acwh025/OneDrive - City, University of London/PhD/Experimental Tests/Data/qos_combination_capture_all/good_tests", 
-        placeholder="Enter path to tests", 
-        id="testdir-input"
-    ),
-    dcc.Dropdown([], multi=True, id="test-dropdown", placeholder="Select one or more tests"),
-    html.Div(id="combinations-container"),
-    html.Div([dbc.ListGroup(
-        generate_toc()
-    )]),
-    generate_metric_output_content("Latency", "latency"),
-    generate_metric_output_content("Throughput", "throughput"),
-    generate_metric_output_content("Sample Rate", "sample-rate"),
-    generate_metric_output_content("Total Samples", "total-samples"),
-    generate_metric_output_content("Lost Samples", "lost-samples"),
-    html.Div([
-        html.H3("Logs Timeline", id="log-timeline-title"),
-        html.Div(id="log-timeline-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
-    ])
-], style={"marginTop": "2vh"}, fluid=True)
+    dbc.Row([
+        dbc.Col(
+            [
+                html.Div(id="testdir", style={"display": "none"}),
+                dbc.Input(
+                    value="C:/Users/acwh025/OneDrive - City, University of London/PhD/Experimental Tests/Data/qos_combination_capture_all/good_tests", 
+                    placeholder="Enter path to tests", 
+                    id="testdir-input"
+                ),
+                dcc.Dropdown(
+                    [], 
+                    multi=True, 
+                    id="test-dropdown", 
+                    placeholder="Select one or more tests",
+                    style={"marginTop": "1vh"}
+                ),
+                html.Div([dbc.ListGroup(
+                    generate_toc()
+                )]),
+            ], 
+            width=3,
+            style={"maxHeight": "100vh", "overflowY": "scroll"}
+        ),
+        dbc.Col(
+            [
+                html.Div(id="combinations-container"),
+                generate_metric_output_content("Latency", "latency"),
+                generate_metric_output_content("Throughput", "throughput"),
+                generate_metric_output_content("Sample Rate", "sample-rate"),
+                generate_metric_output_content("Total Samples", "total-samples"),
+                generate_metric_output_content("Lost Samples", "lost-samples"),
+                html.Div([
+                    html.H3("Logs Timeline", id="log-timeline-title"),
+                    html.Div(id="log-timeline-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+                ])
+            ], 
+            width=9,
+            style={"maxHeight": "100vh", "overflowY": "scroll"}
+        )
+    ]),
+], style={"maxHeight": "100vh", "overflowY": "hidden", "paddingTop": "2vh"}, fluid=True)
 
 @app.callback(
     [
-        Output("test-dropdown", "options"),    
-        Output("combinations-container", "children"),    
+        Output("test-dropdown", "options"),
+        Output("combinations-container", "children"),
+        Output("testdir", "children")
     ],
     Input("testdir-input", "value")
 )
@@ -43,12 +65,12 @@ def populate_dropdown(testpath):
     comb_output = []
     
     if os.path.exists(testpath):
-        output = [os.path.join(testpath, x) for x in os.listdir(testpath)]
+        output = [x for x in os.listdir(testpath)]
         comb_output = get_comb_output(output)
     else:
         output = []
         
-    return output, comb_output
+    return output, comb_output, testpath
 
 @app.callback(
     [
@@ -94,9 +116,12 @@ def populate_dropdown(testpath):
         
         Output("log-timeline-output", "children")
     ],
-    Input("test-dropdown", "value")
+    [
+        Input("test-dropdown", "value"),
+        Input("testdir", "children"),
+    ]
 )
-def populate_summary(tests):
+def populate_summary(tests, testdir):
     
     if tests is None:
         return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
@@ -115,28 +140,30 @@ def populate_summary(tests):
     lost_samples_dfs = []
     
     for test in tests:
+        testname = test
+        test = os.path.join(testdir, test)
         lat_df = get_lat_df(test)
-        lat_dfs.append(lat_df.rename(os.path.basename(test)))
+        lat_dfs.append(lat_df.rename(testname))
         lat_summary_stats = get_summary_stats(lat_df, test)
         lat_summaries.append(lat_summary_stats)
         
         tp_df = get_df_from_subs("mbps", test)
-        tp_dfs.append(tp_df.rename(os.path.basename(test)))
+        tp_dfs.append(tp_df.rename(testname))
         tp_summary_stats = get_summary_stats(tp_df, test)
         tp_summaries.append(tp_summary_stats)
         
         sample_rate_df = get_df_from_subs("samples/s", test)
-        sr_dfs.append(sample_rate_df.rename(os.path.basename(test)))
+        sr_dfs.append(sample_rate_df.rename(testname))
         sample_rate_summary_stats = get_summary_stats(sample_rate_df, test)
         sample_rate_summaries.append(sample_rate_summary_stats)
         
         total_samples_df = get_df_from_subs("total samples", test)
-        total_samples_dfs.append(total_samples_df.rename(os.path.basename(test)))
+        total_samples_dfs.append(total_samples_df.rename(testname))
         total_samples_summary_stats = get_summary_stats(total_samples_df, test)
         total_samples_summaries.append(total_samples_summary_stats)
         
         lost_samples_df = get_df_from_subs("lost samples", test)
-        lost_samples_dfs.append(lost_samples_df.rename(os.path.basename(test)))
+        lost_samples_dfs.append(lost_samples_df.rename(testname))
         lost_samples_summary_stats = get_summary_stats(lost_samples_df, test)
         lost_samples_summaries.append(lost_samples_summary_stats)
         

@@ -148,9 +148,10 @@ def generate_summary_table(summaries):
     ], bordered=True, hover=True)
     
 def generate_toc_section(title, metric):
-    summary_link = html.A(
-        dbc.ListGroupItem(title + " Summary Stats"),
-        href="#" +metric+ "-summary-title"
+    summary_link = dbc.ListGroupItem(
+        title + " Summary Stats",
+        href="#" +metric+ "-summary-title",
+        style={"marginTop": "0.5vh"}
     )
 
     if "total-samples" in metric:
@@ -158,29 +159,34 @@ def generate_toc_section(title, metric):
     elif "lost-samples" in metric:
         boxplot_link = ""
     else:
-        boxplot_link = html.A(
-            dbc.ListGroupItem(title + " Box Plots"),
-            href="#" +metric+ "-boxplot-title"
+        boxplot_link = dbc.ListGroupItem(
+            title + " Box Plots",
+            href="#" +metric+ "-boxplot-title",
+            style={"marginTop": "0.5vh"}
         )
     
-    dotplot_link = html.A(
-        dbc.ListGroupItem(title + " Dot Plots"),
-        href="#" +metric+ "-dotplot-title"
+    dotplot_link = dbc.ListGroupItem(
+        title + " Dot Plots",
+        href="#" +metric+ "-dotplot-title",
+        style={"marginTop": "0.5vh"}
     )
     
-    lineplot_link = html.A(
-        dbc.ListGroupItem(title + " Line Plots"),
-        href="#" +metric+ "-lineplot-title"
+    lineplot_link = dbc.ListGroupItem(
+        title + " Line Plots",
+        href="#" +metric+ "-lineplot-title",
+        style={"marginTop": "0.5vh"}
     )
     
-    histogram_link = html.A(
-        dbc.ListGroupItem(title + " Histograms"),
-        href="#" +metric+ "-histogram-title"
+    histogram_link = dbc.ListGroupItem(
+        title + " Histograms",
+        href="#" +metric+ "-histogram-title",
+        style={"marginTop": "0.5vh"}
     )
     
-    cdf_link = html.A(
-        dbc.ListGroupItem(title + " Empirical Cumulative Distribution Functions"),
-        href="#" +metric+ "-cdf-title"
+    cdf_link = dbc.ListGroupItem(
+        title + " Empirical Cumulative Distribution Functions",
+        href="#" +metric+ "-cdf-title",
+        style={"marginTop": "0.5vh"}
     )
     
     if "total-samples" in metric:
@@ -188,13 +194,14 @@ def generate_toc_section(title, metric):
     elif "lost-samples" in metric:
         transient_link = ""
     else:
-        transient_link = html.A(
-            dbc.ListGroupItem(title + " Transient Analyses"),
-            href="#" +metric+ "-transient-title"
+        transient_link = dbc.ListGroupItem(
+            title + " Transient Analyses",
+            href="#" +metric+ "-transient-title",
+            style={"marginTop": "0.5vh"}
         )
     
     output = [
-        html.H5(title),
+        html.H5(title, style={"marginTop": "1vh"}),
         summary_link,
         boxplot_link,
         dotplot_link,
@@ -217,7 +224,7 @@ def generate_toc():
     for item in lists:
         output = output + item 
         
-    output = output + [html.H5("Logs"), html.A(dbc.ListGroupItem("Log Timeline"), href="#log-timeline-title")]
+    output = output + [html.H5("Logs"), html.A(dbc.ListGroupItem("Log Timeline"), href="#log-timeline-title", style={"paddingBottom": "3vh"})]
         
     return output
 
@@ -424,12 +431,12 @@ def get_comb_output(tests):
         [ html.Td( str(len(datalens)) ) ]
     )
     pubs = html.Tr(
-        [html.Td("Pubs")] + 
+        [html.Td("Publishers")] + 
         [ html.Td(", ".join(pubs)) ] + 
         [ html.Td( str(len(pubs)) ) ]
     )
     subs = html.Tr(
-        [html.Td("Subs")] + 
+        [html.Td("Subscribers")] + 
         [ html.Td(", ".join(subs)) ] + 
         [ html.Td( str(len(subs)) ) ]
     )
@@ -439,7 +446,7 @@ def get_comb_output(tests):
         [ html.Td( str(len(reliabilities)) ) ]
     )
     unicasts = html.Tr(
-        [html.Td("Unicasts")] + 
+        [html.Td("Communication Patterns")] + 
         [ html.Td(", ".join(unicasts)) ] + 
         [ html.Td( str(len(unicasts)) ) ]
     )
@@ -454,13 +461,16 @@ def get_comb_output(tests):
         [ html.Td( str(len(lat_counts)) ) ]
     )
     
-    # total_combs = len(durations) * len(datalens) * len(pubs) * len(subs) * len(reliabilities) * len(durabilities) * len(lat_counts)
-    # total_combs = "{:,.0f}".format(total_combs)
+    total_combs = len(durations) * len(datalens) * len(pubs) * len(subs) * len(reliabilities) * len(durabilities) * len(lat_counts)
+    total_combs = "{:,.0f}".format(total_combs)
     
-    # total_row = html.Tr([html.Td("Total"), html.Td(""), html.Td(total_combs)])
+    total_row = html.Tr([html.Td("Multiplied Total"), html.Td(""), html.Td(total_combs)])
     
     table_body = [
-        html.Tbody([durations, datalens, pubs, subs, reliabilities, unicasts, durabilities, lat_counts])
+        html.Tbody([durations, datalens, pubs, subs, reliabilities, unicasts, durabilities, lat_counts, total_row])
     ]
     
-    return dbc.Table(table_header + table_body, bordered=True)
+    return html.Div([
+        html.H3("Captured Settings", style={"marginTop": "2vh"}),
+        dbc.Table(table_header + table_body, bordered=True)
+    ])
