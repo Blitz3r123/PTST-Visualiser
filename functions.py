@@ -487,7 +487,7 @@ def get_comb_output(tests):
     total_combs = len(durations) * len(datalens) * len(pubs) * len(subs) * len(reliabilities) * len(durabilities) * len(lat_counts)
     total_combs = "{:,.0f}".format(total_combs)
     
-    total_row = html.Tr([html.Td("Multiplied Total"), html.Td(""), html.Td(total_combs)])
+    total_row = html.Tr([html.Td("Multiplied Total", style={"fontWeight": "bold"}), html.Td(""), html.Td(total_combs)])
     
     table_body = [
         html.Tbody([durations, datalens, pubs, subs, reliabilities, unicasts, durabilities, lat_counts, total_row])
@@ -562,15 +562,15 @@ def get_total_samples_received_summary_table(tests, testdir, total_dfs, lost_dfs
     total_fig.update_layout(barmode="group", title="Total Samples Per Subscriber")
     lost_fig = go.Figure(data=lost_bar_data)
     lost_fig.update_layout(barmode="group", title="Lost Samples Per Subscriber")
-        
+    
     total_barchart = dcc.Graph(figure=total_fig)
     lost_barchart = dcc.Graph(figure=lost_fig)
-        
+    
     barchart_output = html.Div([
         total_barchart,
         lost_barchart
     ])
-        
+
     if len(total_dfs) == 0:
         return ""
     
