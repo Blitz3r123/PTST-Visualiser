@@ -498,7 +498,64 @@ def get_comb_output(tests):
         dbc.Table(table_header + table_body, bordered=True)
     ])
     
-def get_total_samples_received_summary_table(total_dfs, lost_dfs):
+def get_total_samples_per_sub(test):
+    rundir = os.path.join("./", test, "run_1")
+    sub_csvs = [os.path.join(rundir, file) for file in os.listdir(rundir) if "sub" in file and ".csv" in file]
+    
+    test_df = pd.DataFrame(columns=["sub", "total_samples"])
+    
+    for sub_csv in sub_csvs:
+        df = pd.read_csv(sub_csv, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
+        total_samples_col = [col for col in df.columns if "total" in col.lower()]
+        total_samples_df = df[total_samples_col]
+        
+        sub_name = os.path.basename(sub_csv).replace(".csv", "")
+        total_samples = int(total_samples_df.max())
+        
+        sub_df = pd.DataFrame([[sub_name, total_samples]], columns=test_df.columns)
+        
+        test_df = pd.concat([test_df, sub_df], ignore_index=True)
+    
+    return test_df
+    
+    
+def get_total_samples_received_summary_table(tests, testdir, total_dfs, lost_dfs):
+    """
+    For each test:
+    1. Get the df containing the total samples per sub
+        How?
+            - For each sub get the max total samples value
+            - Concat vertically with 2 columns: sub, total samples
+                - So it looks like:
+                    sub_0   12045
+                    sub_1   231432
+                    sub_2   45545
+                    ...
+                    sub_n   124234
+    2. Plot the bar chart of it
+    """
+        
+    barchart_output = ""
+    summary_table_output = ""
+    
+    if len(tests) == 0:
+        return ""
+        
+    bar_data = []
+        
+    for test in tests:
+        testpath = os.path.join(testdir, test)
+        total_samples_df = get_total_samples_per_sub(testpath)
+        
+        bar_data.append(
+            go.Bar(x=total_samples_df["sub"], y=total_samples_df["total_samples"], name=test)
+        )
+        
+    fig = go.Figure(data=bar_data)
+    fig.update_layout(barmode="group", title="Total Samples Per Subscriber")
+        
+    barchart_output = dcc.Graph(figure=fig)
+        
     if len(total_dfs) == 0:
         return ""
     
@@ -536,4 +593,6 @@ def get_total_samples_received_summary_table(total_dfs, lost_dfs):
         
     table_body = [html.Tbody(rows)]
     
-    return dbc.Table(table_header + table_body, bordered=True)
+    summary_table_output = dbc.Table(table_header + table_body, bordered=True)
+    
+    return html.Div([ summary_table_output, barchart_output ])

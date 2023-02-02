@@ -122,7 +122,6 @@ def populate_dropdown(testpath):
     ]
 )
 def populate_summary(tests, testdir):
-    
     if tests is None:
         return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
     
@@ -205,7 +204,7 @@ def populate_summary(tests, testdir):
     sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (samples/s)", "F(x)") if sr_dfs else None
     sr_transient = get_transient_analysis(sr_dfs, "Sample Rates (samples/s)")
     
-    total_samples_received_summary_table = get_total_samples_received_summary_table(total_samples_received_dfs, lost_samples_dfs)
+    total_samples_received_summary_table = get_total_samples_received_summary_table(tests, testdir, total_samples_received_dfs, lost_samples_dfs)
     # total_samples_received_boxplot = get_plot("box", total_samples_received_dfs, "Test", "Total Samples Received") if total_samples_received_dfs else None
     total_samples_received_boxplot = ""
     total_samples_received_dotplot = get_plot("dot", total_samples_received_dfs, "Increasing Time In Seconds", "Total Samples Received") if total_samples_received_dfs else None
