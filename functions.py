@@ -502,17 +502,20 @@ def get_total_samples_per_sub(test):
     rundir = os.path.join("./", test, "run_1")
     sub_csvs = [os.path.join(rundir, file) for file in os.listdir(rundir) if "sub" in file and ".csv" in file]
     
-    test_df = pd.DataFrame(columns=["sub", "total_samples"])
+    test_df = pd.DataFrame(columns=["sub", "total_samples", "lost_samples"])
     
     for sub_csv in sub_csvs:
         df = pd.read_csv(sub_csv, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
         total_samples_col = [col for col in df.columns if "total" in col.lower()]
+        lost_samples_col = [col for col in df.columns if "lost" in col.lower()]
         total_samples_df = df[total_samples_col]
+        lost_samples_df = df[total_samples_col]
         
         sub_name = os.path.basename(sub_csv).replace(".csv", "")
         total_samples = int(total_samples_df.max())
+        lost_samples = int(lost_samples_df.max())
         
-        sub_df = pd.DataFrame([[sub_name, total_samples]], columns=test_df.columns)
+        sub_df = pd.DataFrame([[sub_name, total_samples, lost_samples]], columns=test_df.columns)
         
         test_df = pd.concat([test_df, sub_df], ignore_index=True)
     
@@ -541,20 +544,32 @@ def get_total_samples_received_summary_table(tests, testdir, total_dfs, lost_dfs
     if len(tests) == 0:
         return ""
         
-    bar_data = []
+    total_bar_data = []
+    lost_bar_data = []
         
     for test in tests:
         testpath = os.path.join(testdir, test)
-        total_samples_df = get_total_samples_per_sub(testpath)
+        samples_df = get_total_samples_per_sub(testpath)
         
-        bar_data.append(
-            go.Bar(x=total_samples_df["sub"], y=total_samples_df["total_samples"], name=test)
+        total_bar_data.append(
+            go.Bar(x=samples_df["sub"], y=samples_df["total_samples"], name=test)
+        )
+        lost_bar_data.append(
+            go.Bar(x=samples_df["sub"], y=samples_df["lost_samples"], name=test)
         )
         
-    fig = go.Figure(data=bar_data)
-    fig.update_layout(barmode="group", title="Total Samples Per Subscriber")
+    total_fig = go.Figure(data=total_bar_data)
+    total_fig.update_layout(barmode="group", title="Total Samples Per Subscriber")
+    lost_fig = go.Figure(data=lost_bar_data)
+    lost_fig.update_layout(barmode="group", title="Lost Samples Per Subscriber")
         
-    barchart_output = dcc.Graph(figure=fig)
+    total_barchart = dcc.Graph(figure=total_fig)
+    lost_barchart = dcc.Graph(figure=lost_fig)
+        
+    barchart_output = html.Div([
+        total_barchart,
+        lost_barchart
+    ])
         
     if len(total_dfs) == 0:
         return ""
