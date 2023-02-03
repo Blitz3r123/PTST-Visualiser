@@ -15,7 +15,7 @@ app.layout = dbc.Container([
             [
                 html.Div(id="testdir", style={"display": "none"}),
                 dbc.Input(
-                    value="C:/Users/acwh025/OneDrive - City, University of London/PhD/Experimental Tests/Data/qos_combination_capture_all/perfect_tests", 
+                    value="/Users/kaleem/Downloads/OneDrive_1_03-02-2023", 
                     placeholder="Enter path to tests", 
                     id="testdir-input"
                 ),
@@ -65,7 +65,7 @@ def populate_dropdown(testpath):
     comb_output = []
     
     if os.path.exists(testpath):
-        output = [x for x in os.listdir(testpath)]
+        output = [x for x in os.listdir(testpath) if os.path.isdir( os.path.join(testpath, x) )]
         comb_output = get_comb_output(output)
     else:
         output = []

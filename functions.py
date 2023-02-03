@@ -417,14 +417,18 @@ def get_comb_output(tests):
         test = os.path.basename(test)
         
         test = test.split("_")
-        durations.append(test[0])
-        datalens.append(test[1])
-        pubs.append(test[2])
-        subs.append(test[3])
-        reliabilities.append(test[4])
-        unicasts.append(test[5])
-        durabilities.append(test[6])
-        lat_counts.append(test[7])
+        if len(test) >= 8:
+            durations.append(test[0])
+            datalens.append(test[1])
+            pubs.append(test[2])
+            subs.append(test[3])
+            reliabilities.append(test[4])
+            unicasts.append(test[5])
+            durabilities.append(test[6])
+            lat_counts.append(test[7])
+        else:
+            pprint(test)
+            continue
 
     durations = list(set(durations))
     datalens = list(set(datalens))
