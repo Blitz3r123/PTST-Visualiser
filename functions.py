@@ -23,7 +23,7 @@ def get_testdirs(testpath):
     testpath_children = [x for x in os.listdir(testpath)]
     testpath_children = [os.path.join(testpath, x) for x in testpath_children]
 
-    testpath_dirs = [x for x in testpath_children if os.path.isdir(x)]
+    testpath_dirs = [os.path.basename(x) for x in testpath_children if os.path.isdir(x)]
     testpath_files = [x for x in testpath_children if not os.path.isdir(x)]
 
     formatted_testpath_files = ", ".join([os.path.basename(x) for x in testpath_files])
@@ -346,7 +346,7 @@ def get_plot(type, dfs, x_title, y_title):
     elif "histogram" in type:
         fig = px.histogram(df)
     elif "cdf" in type:
-        fig = px.ecdf(df)
+        fig = px.ecdf(df, ecdfnorm="probability")
 
     fig.update_layout(xaxis_title=x_title, yaxis_title=y_title)
     
