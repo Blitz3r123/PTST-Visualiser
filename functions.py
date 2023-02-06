@@ -428,7 +428,7 @@ def get_transient_analysis(dfs, metric):
         
         figs.append(fig)
     
-    return html.Div([dcc.Graph(figure=fig, style={"width": "100%", "height": "100%"}) for fig in figs], style={"maxWidth": "100vw", "overflowX" : "scroll", "height": "100vh"})
+    return html.Div([dcc.Graph(figure=fig, style={"width": "100%", "height": "100%"}) for fig in figs], style={"maxWidth": "100vw", "overflowX" : "scroll", "height": "auto"})
 
 def get_comb_output(tests):
     durations = []
