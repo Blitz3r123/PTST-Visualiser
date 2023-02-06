@@ -12,6 +12,33 @@ from dash import Dash, html, dcc, Output, Input
 
 console = Console()
 
+def get_testdirs(testpath):
+    testdirs = []
+    errors = []
+
+    if not os.path.exists(testpath):
+        errors.append(f"The path {testpath} does NOT exist.")
+        return testdirs, errors
+
+    testpath_children = [x for x in os.listdir(testpath)]
+    testpath_children = [os.path.join(testpath, x) for x in testpath_children]
+
+    testpath_dirs = [x for x in testpath_children if os.path.isdir(x)]
+    testpath_files = [x for x in testpath_children if not os.path.isdir(x)]
+
+    formatted_testpath_files = ", ".join([os.path.basename(x) for x in testpath_files])
+
+    if len(testpath_files) > 0:
+        errors.append(f"{len(testpath_files)} files found in {testpath}: {formatted_testpath_files}")
+
+    if len(testpath_dirs) == 0:
+        errors.append(f"No folders found in {testpath}.")
+        return testdirs, errors
+    else:
+        testdirs = testpath_dirs
+
+    return testdirs, errors
+
 def get_summary_stats(df, test):
     count = len(df.index)
     mean = df.mean()
@@ -524,7 +551,6 @@ def get_total_samples_per_sub(test):
         test_df = pd.concat([test_df, sub_df], ignore_index=True)
     
     return test_df
-    
     
 def get_total_samples_received_summary_table(tests, testdir, total_dfs, lost_dfs):
     """

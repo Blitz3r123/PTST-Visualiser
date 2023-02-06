@@ -35,6 +35,7 @@ app.layout = dbc.Container([
         ),
         dbc.Col(
             [
+                html.Div(id="alert-container"),
                 html.Div(id="combinations-container"),
                 generate_metric_output_content("Latency", "latency"),
                 generate_metric_output_content("Throughput", "throughput"),
@@ -56,21 +57,31 @@ app.layout = dbc.Container([
     [
         Output("test-dropdown", "options"),
         Output("combinations-container", "children"),
-        Output("testdir", "children")
+        Output("testdir", "children"),
+        Output("alert-container", "children")
     ],
     Input("testdir-input", "value")
 )
 def populate_dropdown(testpath):
-    output = []
+    testdirs = []
     comb_output = []
+    errors = []
+
+    testdirs, errors = get_testdirs(testpath)
     
-    if os.path.exists(testpath):
-        output = [x for x in os.listdir(testpath) if os.path.isdir( os.path.join(testpath, x) )]
-        comb_output = get_comb_output(output)
-    else:
-        output = []
+    comb_output = get_comb_output(testdirs)
         
-    return output, comb_output, testpath
+    if len(errors) > 0:
+        alerts = []
+        
+        for error in errors:
+            alerts.append(dbc.Alert(error, id="alert", color="danger", dismissable=True, is_open=True))
+
+        alert_output = alerts
+    else:
+        alert_output = []
+    
+    return testdirs, comb_output, testpath, alert_output
 
 @app.callback(
     [
