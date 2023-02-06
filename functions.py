@@ -342,7 +342,7 @@ def get_transient_analysis(dfs, metric):
         )
         
         fig.add_trace(
-            go.Scatter(y=df, x=df.index),
+            go.Scatter(y=df, x=df.index, mode='markers'),
             row=1, col=1
         )
         fig.add_vline(x=len(df.index) / 2, row=1, col=1, line_dash="dash", line_width=3)
