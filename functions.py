@@ -510,11 +510,11 @@ def get_total_samples_per_sub(test):
     
     for sub_csv in sub_csvs:
         df = pd.read_csv(sub_csv, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
-        total_samples_col = [col for col in df.columns if "total" in col.lower()]
-        lost_samples_col = [col for col in df.columns if "lost" in col.lower()]
+        total_samples_col = [col for col in df.columns if "total" in col.lower() and "%" not in col.lower()]
+        lost_samples_col = [col for col in df.columns if "lost" in col.lower() and "%" not in col.lower()]
         total_samples_df = df[total_samples_col]
-        lost_samples_df = df[total_samples_col]
-        
+        lost_samples_df = df[lost_samples_col]
+
         sub_name = os.path.basename(sub_csv).replace(".csv", "")
         total_samples = int(total_samples_df.max())
         lost_samples = int(lost_samples_df.max())
