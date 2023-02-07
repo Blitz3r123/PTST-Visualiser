@@ -3,12 +3,15 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import operator
+import functools
 
 from pprint import pprint
 from plotly.subplots import make_subplots
 from rich.console import Console
 from statistics import NormalDist
 from dash import Dash, html, dcc, Output, Input
+from random import randrange, sample
 
 console = Console()
 
@@ -346,7 +349,20 @@ def get_plot(type, dfs, x_title, y_title):
     elif "histogram" in type:
         fig = px.histogram(df)
     elif "cdf" in type:
-        fig = px.ecdf(df, ecdfnorm="probability")
+        
+        color_list = px.colors.qualitative.Plotly
+        rand_ints = sample(range(0, 9), len(dfs))
+        rand_colors = [color_list[x] for x in rand_ints]
+        
+        fig = go.Figure()
+        
+        figs = []
+        
+        for i in range(len(dfs)):
+            df = dfs[i]
+            figs.append( px.ecdf(df).update_traces(line_color=rand_colors[i]) )
+        
+        fig = go.Figure(data=functools.reduce(operator.add, [_.data for _ in figs]))
 
     fig.update_layout(xaxis_title=x_title, yaxis_title=y_title)
     

@@ -9,13 +9,16 @@ from dash import Dash, html, dcc, Output, Input
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
+uni_pc_path = "C:/Users/acwh025/OneDrive - City, University of London/PhD/Experimental Tests/Data/qos_combination_capture_all/perfect_tests"
+mbp_path = "/Users/kaleem/Downloads/OneDrive_1_03-02-2023"
+
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             [
                 html.Div(id="testdir", style={"display": "none"}),
                 dbc.Input(
-                    value="/Users/kaleem/Downloads/OneDrive_1_03-02-2023", 
+                    value=uni_pc_path,
                     placeholder="Enter path to tests", 
                     id="testdir-input"
                 ),
