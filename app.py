@@ -10,6 +10,7 @@ from dash import Dash, html, dcc, Output, Input
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 uni_pc_path = "C:/Users/acwh025/OneDrive - City, University of London/PhD/Experimental Tests/Data/qos_combination_capture_all/perfect_tests"
+qos_combination_capture_v2 = "C:/Users/acwh025/Documents/PhD Data/qos_combination_capture_v2/good"
 mbp_path = "/Users/kaleem/Downloads/OneDrive_1_03-02-2023"
 
 app.layout = dbc.Container([
@@ -18,7 +19,7 @@ app.layout = dbc.Container([
             [
                 html.Div(id="testdir", style={"display": "none"}),
                 dbc.Input(
-                    value=uni_pc_path,
+                    value=qos_combination_capture_v2,
                     placeholder="Enter path to tests", 
                     id="testdir-input"
                 ),
@@ -175,14 +176,16 @@ def populate_summary(tests, testdir):
         total_samples_received_summary_stats = get_summary_stats(total_samples_received_df, test)
         total_samples_received_summaries.append(total_samples_received_summary_stats)
         
+        
         lost_samples_df = get_df_from_subs("lost samples", test)
         lost_samples_dfs.append(lost_samples_df.rename(testname))
         lost_samples_summary_stats = get_summary_stats(lost_samples_df, test)
         lost_samples_summaries.append(lost_samples_summary_stats)
         
         cpu_log_df = get_cpu_log_df(test)
-        
+
         fig = px.timeline(cpu_log_df, x_start="start", x_end="end", y="vm", color="vm")
+        
         fig.update_layout(xaxis=dict(
             title="Log Timestamp",
             tickformat="%H:%M:%S"
@@ -193,6 +196,7 @@ def populate_summary(tests, testdir):
             dcc.Graph(figure=fig)
         ])
         log_timelines.append(log_timeline)
+    
     
     lat_summary_table = generate_summary_table(lat_summaries)
     lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (ms)") if lat_dfs else None

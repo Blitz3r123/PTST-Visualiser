@@ -89,17 +89,18 @@ def get_lat_df(test):
     if "pub_0.csv" not in csv_files:
         return
     
-    sub_files = [file for file in csv_files if "sub" in file]
-    
     pubdir = os.path.join(rundir, "pub_0.csv")
     
     lat_df = pd.read_csv(pubdir, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
     
-    
     try:
         lat_head = [col for col in lat_df.columns if "latency" in col.lower()][0]
         lat_df = lat_df[lat_head]
+    except pd.errors.EmptyDataError as e:
+        console.print(e, style="bold red")
+        pprint(lat_df.head())
     except Exception as e:
+        console.print(e, style="bold red")
         return
     
     lat_df = lat_df.loc[:].div(1000)
@@ -146,7 +147,11 @@ def get_cpu_log_df(test):
             "vm": os.path.basename(log).replace("_cpu.log", "").replace("csr-dds-", "").replace("app", "vm")
         }
         
-        log_df = pd.read_csv(log, skiprows=1, skipfooter=1, engine="python", on_bad_lines="skip", delim_whitespace=True)
+        try:
+            log_df = pd.read_csv(log, skiprows=1, skipfooter=1, engine="python", on_bad_lines="skip", delim_whitespace=True)
+        except Exception as e:
+            console.print(f"Ran into exception when trying to read:\n\t{log}.", style="bold red")
+            continue
         
         # ? Pick the first column
         time_df = log_df.iloc[:,0]
