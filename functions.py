@@ -546,7 +546,7 @@ def get_comb_output(tests):
     ]
     
     return html.Div([
-        html.H3("Captured Settings", style={"marginTop": "2vh"}),
+        html.H3(f"Captured Settings for {len(tests):,} Tests", style={"marginTop": "2vh"}),
         dbc.Table(table_header + table_body, bordered=True)
     ])
     
