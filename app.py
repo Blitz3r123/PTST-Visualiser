@@ -10,7 +10,7 @@ from dash import Dash, html, dcc, Output, Input
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 uni_pc_path = "C:/Users/acwh025/OneDrive - City, University of London/PhD/Experimental Tests/Data/qos_combination_capture_all/perfect_tests"
-qos_combination_capture_v2 = "C:/Users/acwh025/Documents/PhD Data/qos_combination_capture_v2/good"
+qos_combination_capture_v2 = "C:/Users/acwh025/Documents/PhD Data/qos_combination_capture_v2/good_1"
 qos_combination_capture_v2_summaries = "C:/Users/acwh025/Documents/Software Dev/PTST-Summariser/summaries"
 mbp_path = "/Users/kaleem/Downloads/OneDrive_1_03-02-2023"
 
@@ -20,7 +20,7 @@ app.layout = dbc.Container([
             [
                 html.Div(id="testdir", style={"display": "none"}),
                 dbc.Input(
-                    value=qos_combination_capture_v2_summaries,
+                    value=qos_combination_capture_v2,
                     placeholder="Enter path to tests", 
                     id="testdir-input"
                 ),

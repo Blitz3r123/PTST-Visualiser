@@ -90,7 +90,8 @@ def get_lat_df(test):
     
     pubdir = os.path.join(rundir, "pub_0.csv")
     
-    lat_df = pd.read_csv(pubdir, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
+    # ! Limit to 50,000 rows or it will break Dash
+    lat_df = pd.read_csv(pubdir, on_bad_lines="skip", skiprows=2, engine="python", nrows=50000).iloc[:-4]
     
     try:
         lat_head = [col for col in lat_df.columns if "latency" in col.lower()][0]
