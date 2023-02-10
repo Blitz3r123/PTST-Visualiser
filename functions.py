@@ -72,7 +72,6 @@ def get_summary_stats(df, test):
         "max": df_max
     }
         
-        
     return summary_stats
 
 def get_lat_df(test):
