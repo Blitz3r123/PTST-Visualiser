@@ -486,6 +486,10 @@ def get_comb_output(tests):
     durabilities = list(set(durabilities))
     lat_counts = list(set(lat_counts))
 
+    total_combs = len(durations) * len(datalens) * len(pubs) * len(subs) * len(reliabilities) * len(unicasts) * len(durabilities) * len(lat_counts)
+
+    total_combs = "{:,.0f}".format(total_combs)
+
     table_header = [
         html.Thead(html.Tr([
             html.Th("Variable"),
@@ -535,8 +539,6 @@ def get_comb_output(tests):
         [ html.Td( str(len(lat_counts)) ) ]
     )
     
-    total_combs = len(durations) * len(datalens) * len(pubs) * len(subs) * len(reliabilities) * len(durabilities) * len(lat_counts)
-    total_combs = "{:,.0f}".format(total_combs)
     
     total_row = html.Tr([html.Td("Multiplied Total", style={"fontWeight": "bold"}), html.Td(""), html.Td(total_combs)])
     
