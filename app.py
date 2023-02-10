@@ -166,6 +166,8 @@ def populate_summary(tests, testdir):
         testname = test
         test = os.path.join(testdir, test)
         lat_df = summary_df["latency"]
+        # ? Convert microseconds to milliseconds
+        lat_df = lat_df.loc[:].div(1000)
         lat_dfs.append(lat_df.rename(testname))
         lat_summary_stats = get_summary_stats(lat_df, test)
         lat_summaries.append(lat_summary_stats)
