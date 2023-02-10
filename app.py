@@ -130,7 +130,7 @@ def populate_dropdown(testpath):
         Output("lost-samples-cdf-output", "children"),
         Output("lost-samples-transient-output", "children"),
         
-        Output("log-timeline-output", "children")
+        # Output("log-timeline-output", "children")
     ],
     [
         Input("test-dropdown", "value"),
@@ -139,14 +139,14 @@ def populate_dropdown(testpath):
 )
 def populate_summary(tests, testdir):
     if tests is None:
-        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
     sample_rate_summaries = []
     total_samples_received_summaries = []
     lost_samples_summaries = []
-    log_timelines = []
+    # log_timelines = []
     
     lat_dfs = []
     tp_dfs = []
@@ -155,48 +155,56 @@ def populate_summary(tests, testdir):
     lost_samples_dfs = []
     
     for test in tests:
+        summary_file = os.path.join(testdir, f"{test}_summary.csv")
+        if not os.path.exists(summary_file):
+            console.print(f"Summmary file doesn't exist for {test}.", style="bold red")
+            continue
+        
+        # ! Limit file reading to 50,000 rows or Dash will break
+        summary_df = pd.read_csv(summary_file, nrows=50000)
+        
         testname = test
         test = os.path.join(testdir, test)
-        lat_df = get_lat_df(test)
+        lat_df = summary_df["latency"]
         lat_dfs.append(lat_df.rename(testname))
         lat_summary_stats = get_summary_stats(lat_df, test)
         lat_summaries.append(lat_summary_stats)
         
-        tp_df = get_df_from_subs("mbps", test)
+        tp_df = summary_df["total_throughput"].dropna()
         tp_dfs.append(tp_df.rename(testname))
         tp_summary_stats = get_summary_stats(tp_df, test)
         tp_summaries.append(tp_summary_stats)
         
-        sample_rate_df = get_df_from_subs("samples/s", test)
+        sample_rate_df = summary_df["total_sample_rate"].dropna()
         sr_dfs.append(sample_rate_df.rename(testname))
         sample_rate_summary_stats = get_summary_stats(sample_rate_df, test)
         sample_rate_summaries.append(sample_rate_summary_stats)
         
-        total_samples_received_df = get_df_from_subs("total samples received", test)
+        total_samples_received_df = summary_df["total_samples_received"].dropna()
         total_samples_received_dfs.append(total_samples_received_df.rename(testname))
         total_samples_received_summary_stats = get_summary_stats(total_samples_received_df, test)
         total_samples_received_summaries.append(total_samples_received_summary_stats)
         
         
-        lost_samples_df = get_df_from_subs("lost samples", test)
+        lost_samples_df = summary_df["total_samples_lost"].dropna()
         lost_samples_dfs.append(lost_samples_df.rename(testname))
         lost_samples_summary_stats = get_summary_stats(lost_samples_df, test)
         lost_samples_summaries.append(lost_samples_summary_stats)
         
-        cpu_log_df = get_cpu_log_df(test)
+        # cpu_log_df = get_cpu_log_df(test)
 
-        fig = px.timeline(cpu_log_df, x_start="start", x_end="end", y="vm", color="vm")
+        # fig = px.timeline(cpu_log_df, x_start="start", x_end="end", y="vm", color="vm")
         
-        fig.update_layout(xaxis=dict(
-            title="Log Timestamp",
-            tickformat="%H:%M:%S"
-        ))
+        # fig.update_layout(xaxis=dict(
+        #     title="Log Timestamp",
+        #     tickformat="%H:%M:%S"
+        # ))
             
-        log_timeline = html.Div([
-            html.H5(os.path.basename(test)),
-            dcc.Graph(figure=fig)
-        ])
-        log_timelines.append(log_timeline)
+        # log_timeline = html.Div([
+        #     html.H5(os.path.basename(test)),
+        #     dcc.Graph(figure=fig)
+        # ])
+        # log_timelines.append(log_timeline)
     
     
     lat_summary_table = generate_summary_table(lat_summaries)
@@ -223,7 +231,8 @@ def populate_summary(tests, testdir):
     sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (samples/s)", "F(x)") if sr_dfs else None
     sr_transient = get_transient_analysis(sr_dfs, "Sample Rates (samples/s)")
     
-    total_samples_received_summary_table = get_total_samples_received_summary_table(tests, testdir, total_samples_received_dfs, lost_samples_dfs)
+    # total_samples_received_summary_table = get_total_samples_received_summary_table(tests, testdir, total_samples_received_dfs, lost_samples_dfs)
+    total_samples_received_summary_table = ""
     # total_samples_received_boxplot = get_plot("box", total_samples_received_dfs, "Test", "Total Samples Received") if total_samples_received_dfs else None
     total_samples_received_boxplot = ""
     total_samples_received_dotplot = get_plot("dot", total_samples_received_dfs, "Increasing Time In Seconds", "Total Samples Received") if total_samples_received_dfs else None
@@ -242,9 +251,9 @@ def populate_summary(tests, testdir):
     lost_samples_cdf = get_plot("cdf", lost_samples_dfs, "Lost Samples", "F(x)") if lost_samples_dfs else None
     lost_samples_transient = None
     
-    log_timelines = html.Div(log_timelines)
+    # log_timelines = html.Div(log_timelines)
         
-    return lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_summary_table, total_samples_received_boxplot, total_samples_received_dotplot, total_samples_received_lineplot, total_samples_received_histogram, total_samples_received_cdf, total_samples_received_transient, lost_samples_summary_table, lost_samples_boxplot, lost_samples_dotplot, lost_samples_lineplot, lost_samples_histogram, lost_samples_cdf, lost_samples_transient, log_timelines
+    return lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_summary_table, total_samples_received_boxplot, total_samples_received_dotplot, total_samples_received_lineplot, total_samples_received_histogram, total_samples_received_cdf, total_samples_received_transient, lost_samples_summary_table, lost_samples_boxplot, lost_samples_dotplot, lost_samples_lineplot, lost_samples_histogram, lost_samples_cdf, lost_samples_transient
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")
