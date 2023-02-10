@@ -68,13 +68,13 @@ app.layout = dbc.Container([
     Input("testdir-input", "value")
 )
 def populate_dropdown(testpath):
-    testdirs = []
+    test_summaries = []
     comb_output = []
     errors = []
 
-    testdirs, errors = get_testdirs(testpath)
+    test_summaries, errors = get_test_summaries(testpath)
     
-    comb_output = get_comb_output(testdirs)
+    comb_output = get_comb_output(test_summaries)
         
     if len(errors) > 0:
         alerts = []
@@ -86,7 +86,7 @@ def populate_dropdown(testpath):
     else:
         alert_output = []
     
-    return testdirs, comb_output, testpath, alert_output
+    return test_summaries, comb_output, testpath, alert_output
 
 @app.callback(
     [
