@@ -115,6 +115,7 @@ def summarise_tests(outputdir, summarydir):
     
     for i in track( range( len(tests) ), description="Summarising tests..." ):
         test = tests[i]
+        
         if test_summary_exists(test, summarydir):
             continue
         
@@ -129,43 +130,37 @@ def summarise_tests(outputdir, summarydir):
         
         sub_files = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "sub" in _]
 
-        df_cols = [
-            "latency",
-            "total_throughput_mbps",
-            "total_sample_rate",
-            "total_samples_received",
-            "total_samples_lost"
-        ]
+        test_df = pd.DataFrame()
 
+        # ? Add the metrics for the entire test
+        latencies = get_latencies(pub0_csv).rename("latency_us")
+        total_throughput_mbps = get_total_sub_metric(sub_files, "mbps").rename("total_throughput_mbps")
+        total_sample_rate = get_total_sub_metric(sub_files, "samples/s").rename("total_sample_rate")
+        total_samples_received = pd.Series([get_total_sub_metric(sub_files, "total samples").max()]).rename("total_samples_received")
+        total_samples_lost = pd.Series([get_total_sub_metric(sub_files, "lost samples").max()]).rename("total_samples_lost")
+
+        test_df = pd.concat([
+            latencies,
+            total_throughput_mbps,
+            total_sample_rate,
+            total_samples_received,    
+            total_samples_lost    
+        ], axis=1)
+        
+        # ? Add the metrics for each sub
         for sub_file in sub_files:
-            sub_name = os.path.basename(sub_file).replace(".csv", '')
-            df_cols.append(f"{sub_name}_throughput_mbps")
-            df_cols.append(f"{sub_name}_sample_rate")
-            df_cols.append(f"{sub_name}_samples_received")
-            df_cols.append(f"{sub_name}_samples_lost")
-        
-        test_df = pd.DataFrame(columns=df_cols)
-
-        test_df["latency"] = get_latencies(pub0_csv)
-        test_df["total_throughput_mbps"] = get_total_sub_metric(sub_files, "mbps")
-        test_df["total_sample_rate"] = get_total_sub_metric(sub_files, "samples/s")
-        # ? Only put the value on the first row instead of repeating on every column (taking up extra storage)
-        test_df.loc[test_df.index[0], 'total_samples_received'] = get_total_sub_metric(sub_files, "total samples").max()
-        test_df.loc[test_df.index[0], 'total_samples_lost'] = get_total_sub_metric(sub_files, "lost samples").max()
-        
-        sub_cols = [_ for _ in test_df.columns if 'sub' in _]
-        sub_count = int(len(sub_cols) / 4)
-
-        for i in range(sub_count):
-            try:
-                sub_file = [_ for _ in sub_files if f"sub_{i}.csv" in _][0]
-            except IndexError as e:
-                console.print(f"Couldn't find sub_{i}.csv for {test}.", style="bold red")
-                
-            test_df[f"sub_{i}_throughput_mbps"] = get_metric_per_sub(sub_file, "mbps")
-            test_df[f"sub_{i}_sample_rate"] = get_metric_per_sub(sub_file, "samples/s")
-            test_df.loc[test_df.index[0], f"sub_{i}_samples_received"] = get_metric_per_sub(sub_file, "total samples").max()
-            test_df.loc[test_df.index[0], f"sub_{i}_samples_lost"] = get_metric_per_sub(sub_file, "lost samples").max()
+            throughput_mbps = get_metric_per_sub(sub_file, "mbps").rename(f"sub_{i}_throughput_mbps")
+            sample_rate = get_metric_per_sub(sub_file, "samples/s").rename(f"sub_{i}_sample_rate")
+            total_samples_received = pd.Series([get_metric_per_sub(sub_file, "total samples").rename(f"sub_{i}_total_samples_received").max()])
+            total_samples_lost = pd.Series([get_metric_per_sub(sub_file, "lost samples").rename(f"sub_{i}_total_samples_lost").max()])
+            
+            test_df = pd.concat([
+                test_df, 
+                throughput_mbps,
+                sample_rate,
+                total_samples_received,
+                total_samples_lost    
+            ], axis=1)
 
         # ? Replace NaN with ""
         test_df = test_df.fillna("")
