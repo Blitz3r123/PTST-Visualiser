@@ -59,6 +59,18 @@ def analyse_tests(testsdir, outputdir):
             # ? Get actual csv files
             actual_csv_files = get_actual_csv_files(test)
             
+            actual_csv_filepaths = [os.path.join(test, "run_1", _) for _ in actual_csv_files]
+            
+            empty_files = []
+            for file in actual_csv_filepaths:
+                filesize = os.path.getsize(file)
+                if filesize == 0:
+                    empty_files.append(file)
+                    continue
+                
+            if len(empty_files) > 0:
+                reports.append("Empty Files: " + ", ".join(empty_files))
+            
             if len(expected_csv_files) == 0:
                 console.print(f"{test} expects no csv files?!", style="bold red")
                 sys.exit(0)
@@ -85,7 +97,7 @@ def analyse_tests(testsdir, outputdir):
                 
     test_reports_df = pd.DataFrame(test_reports)
     test_reports_df.to_csv("./test_report.csv")
-    console.print(f"Test issues written to test_report.csv", style="bold white")
+    console.print(f"Test issues written to test_report.csv.", style="bold green")
                 
     for test in successful_tests:
         with console.status(f"[{successful_tests.index(test) + 1}/{len(successful_tests)}] Copying {os.path.basename(test)}..."):
@@ -144,9 +156,8 @@ def summarise_tests(outputdir, summarydir):
             try:
                 sub_file = [_ for _ in sub_files if f"sub_{i}.csv" in _][0]
             except IndexError as e:
-                console.print(e, style="bold red")
-                console.print(f"Couldn't find sub_{i}.csv in sub files.", style="bold white")
-                console.print(f"{len(sub_files)} Sub Files: \n{sub_files}", style="bold white")
+                console.print(f"Couldn't find sub_{i}.csv for {test}.", style="bold red")
+                
             test_df[f"sub_{i}_throughput_mbps"] = get_metric_per_sub(sub_file, "mbps")
             test_df[f"sub_{i}_sample_rate"] = get_metric_per_sub(sub_file, "samples/s")
             test_df.loc[test_df.index[0], f"sub_{i}_samples_received"] = get_metric_per_sub(sub_file, "total samples").max()

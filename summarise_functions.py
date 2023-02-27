@@ -41,21 +41,29 @@ def get_total_sub_metric(sub_files, metric):
     sub_dfs = []
     
     for file in sub_files:
-        df = pd.read_csv(file, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
+        try:
+            df = pd.read_csv(file, on_bad_lines="skip", skiprows=2, skipfooter=3, engine="python")
+        except Exception as e:
+            console.print(f"Error when getting data from {file}:", style="bold red")
+            console.print(f"\t{e}", style="bold red")
+            continue
         sub_head = [x for x in df.columns if metric in x.lower()][0]
         df = df[sub_head]
         df.rename(os.path.basename(file).replace(".csv", ""), inplace=True)
         sub_dfs.append(df)
         
-    sub_df = pd.concat(sub_dfs, axis=1)
+    if sub_dfs:
+        sub_df = pd.concat(sub_dfs, axis=1)
     
-    # ? Add up all columns to create total column
-    sub_df["total_" + metric] = sub_df[list(sub_df.columns)].sum(axis=1)
-    
-    # ? Take off the last number because its an average produced by perftest
-    sub_df = sub_df[:-2]
-    
-    return sub_df["total_" + metric][:-1]
+        # ? Add up all columns to create total column
+        sub_df["total_" + metric] = sub_df[list(sub_df.columns)].sum(axis=1)
+        
+        # ? Take off the last number because its an average produced by perftest
+        sub_df = sub_df[:-2]
+        
+        return sub_df["total_" + metric][:-1]
+    else:
+        console.print(f"Couldn't get any data from {sub_files}.", style="bold red")
 
 def test_summary_exists(test, summarydir):
     testname = os.path.basename(test)
