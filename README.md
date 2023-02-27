@@ -1,3 +1,5 @@
+# PTST Data Processing + Visualiser
+
 This tool basically takes the results of a test campaign from PTST and does the following:
 
 1. Check which test results are usable (`analyse_functions.py`).
@@ -6,6 +8,8 @@ This tool basically takes the results of a test campaign from PTST and does the 
 This is all for preparation to be used in the PTST Visualiser (`index.py`).
 
 ## How to use
+
+### Data Processing
 Run the following on the folder of a test campaign from PTST:
 
 ```
@@ -13,6 +17,12 @@ python process.py <camp_dir> <output_dir> <summary_dir>
 ```
 
 Where `<camp_dir>` is the path to the test campaign results (a folder to all tests where each folder is a test) from PTST, `<output_dir>` is the path to a folder where the usable test data will be copied to, and `<summary_dir>` is the folder where all the summaries will be stored.
+
+### Visualiser
+
+```
+python app.py
+```
 
 ## Todo
 [ ] Add checks to see if the actual csv files have a data length greater than like 50 bytes i.e. they aren't empty.
