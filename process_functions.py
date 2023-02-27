@@ -80,7 +80,7 @@ def analyse_tests(testsdir, outputdir):
                 reports.append(f"Test has no csv files.")
                 
             if len(actual_csv_files) < len(expected_csv_files):
-                reports.append(f"{test} doesn't have all of the expected csv files.")
+                reports.append(f"Missing {len(expected_csv_files) - len(actual_csv_files)} csv files.")
             
             # ? Copy over leftover files from the test that happened after
             found_csv_files = copy_leftover_csv_files_if_found(test, actual_csv_files, expected_csv_files)
