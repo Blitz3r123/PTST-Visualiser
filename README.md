@@ -5,7 +5,7 @@ This tool basically takes the results of a test campaign from PTST and does the 
 1. Check which test results are usable (`analyse_functions.py`).
 2. Summarise the usable results by putting all measurements into a single file (`summarise_functions.py`).
 
-This is all for preparation to be used in the PTST Visualiser (`index.py`).
+This is all for preparation to be used in the PTST Visualiser (`app.py`).
 
 ## How to use
 
