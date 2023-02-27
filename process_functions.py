@@ -69,6 +69,7 @@ def analyse_tests(testsdir, outputdir):
                     continue
                 
             if len(empty_files) > 0:
+                empty_files = [os.path.basename(file) for file in empty_files]
                 reports.append("Empty Files: " + ", ".join(empty_files))
             
             if len(expected_csv_files) == 0:
@@ -77,6 +78,9 @@ def analyse_tests(testsdir, outputdir):
             
             if len(actual_csv_files) == 0:
                 reports.append(f"Test has no csv files.")
+                
+            if len(actual_csv_files) < len(expected_csv_files):
+                reports.append(f"{test} doesn't have all of the expected csv files.")
             
             # ? Copy over leftover files from the test that happened after
             found_csv_files = copy_leftover_csv_files_if_found(test, actual_csv_files, expected_csv_files)
@@ -118,7 +122,7 @@ def summarise_tests(outputdir, summarydir):
         pub_files = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "pub" in _]
         
         if len(pub_files) == 0:
-            console.print(f"{test} has 0 pub files.", style="bold red")
+            console.print(f"{test} has no pub files.", style="bold red")
             continue
 
         pub0_csv = pub_files[0]
