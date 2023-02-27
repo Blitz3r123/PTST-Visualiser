@@ -225,7 +225,7 @@ def copy_leftover_csv_files_if_found(test, actual_files, expected_files):
                 destination = os.path.join(test, "run_1", os.path.basename(source_file))
                 shutil.copy(source_file, destination)
                 
-            console.print(f"Copied leftovers from {next_test} to {test}.", style="bold green")
+            # console.print(f"Copied leftovers from {next_test} to {test}.", style="bold green")
             
         return found_files
     except IndexError as e:

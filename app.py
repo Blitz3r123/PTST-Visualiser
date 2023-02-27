@@ -160,8 +160,8 @@ def populate_summary(tests, testdir):
             console.print(f"Summmary file doesn't exist for {test}.", style="bold red")
             continue
         
-        # ! Limit file reading to 50,000 rows or Dash will break
-        summary_df = pd.read_csv(summary_file, nrows=50000)
+        # ! Limit file reading to 10,000 rows or Dash will break
+        summary_df = pd.read_csv(summary_file, nrows=10000)
         
         testname = test
         test = os.path.join(testdir, test)

@@ -1,10 +1,12 @@
 from analyse_functions import *
+from summarise_functions import *
 
 import pandas as pd
 
-def validate_args(testsdir, outputdir):
+def validate_args(testsdir, outputdir, summarydir):
     testsdir_exists_and_isdir = os.path.exists(testsdir) and os.path.isdir(testsdir)
     outputdir_exists_and_isdir = os.path.exists(outputdir) and os.path.isdir(outputdir)
+    summarydir_exists_and_isdir = os.path.exists(summarydir) and os.path.isdir(summarydir)
     
     if not testsdir_exists_and_isdir:
         console.print(f"{testsdir} does not exist or is not a folder.", style="bold red")
@@ -12,6 +14,10 @@ def validate_args(testsdir, outputdir):
     
     if not outputdir_exists_and_isdir:
         console.print(f"{outputdir} does not exist or is not a folder.", style="bold red")
+        sys.exit(0)
+        
+    if not summarydir_exists_and_isdir:
+        console.print(f"{summarydir} does not exist or is not a folder.", style="bold red")
         sys.exit(0)
 
 def analyse_tests(testsdir, outputdir):
@@ -87,3 +93,72 @@ def analyse_tests(testsdir, outputdir):
             dest_dir = os.path.join(outputdir, os.path.basename(test))
             if not os.path.exists(dest_dir):
                 shutil.copytree(src_dir, dest_dir)
+                
+def summarise_tests(outputdir, summarydir):
+    tests = [ os.path.join(outputdir, _) for _ in os.listdir(outputdir) ]
+    
+    for i in track( range( len(tests) ), description="Summarising tests..." ):
+        test = tests[i]
+        if test_summary_exists(test, summarydir):
+            continue
+        
+        testpath = os.path.join(test, "run_1")
+        pub_files = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "pub" in _]
+        
+        if len(pub_files) == 0:
+            console.print(f"{test} has 0 pub files.", style="bold red")
+            continue
+
+        pub0_csv = pub_files[0]
+        
+        sub_files = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "sub" in _]
+
+        df_cols = [
+            "latency",
+            "total_throughput_mbps",
+            "total_sample_rate",
+            "total_samples_received",
+            "total_samples_lost"
+        ]
+
+        for sub_file in sub_files:
+            sub_name = os.path.basename(sub_file).replace(".csv", '')
+            df_cols.append(f"{sub_name}_throughput_mbps")
+            df_cols.append(f"{sub_name}_sample_rate")
+            df_cols.append(f"{sub_name}_samples_received")
+            df_cols.append(f"{sub_name}_samples_lost")
+        
+        test_df = pd.DataFrame(columns=df_cols)
+
+        test_df["latency"] = get_latencies(pub0_csv)
+        test_df["total_throughput_mbps"] = get_total_sub_metric(sub_files, "mbps")
+        test_df["total_sample_rate"] = get_total_sub_metric(sub_files, "samples/s")
+        # ? Only put the value on the first row instead of repeating on every column (taking up extra storage)
+        test_df.loc[test_df.index[0], 'total_samples_received'] = get_total_sub_metric(sub_files, "total samples").max()
+        test_df.loc[test_df.index[0], 'total_samples_lost'] = get_total_sub_metric(sub_files, "lost samples").max()
+        
+        sub_cols = [_ for _ in test_df.columns if 'sub' in _]
+        sub_count = int(len(sub_cols) / 4)
+
+        for i in range(sub_count):
+            try:
+                sub_file = [_ for _ in sub_files if f"sub_{i}.csv" in _][0]
+            except IndexError as e:
+                console.print(e, style="bold red")
+                console.print(f"Couldn't find sub_{i}.csv in sub files.", style="bold white")
+                console.print(f"{len(sub_files)} Sub Files: \n{sub_files}", style="bold white")
+            test_df[f"sub_{i}_throughput_mbps"] = get_metric_per_sub(sub_file, "mbps")
+            test_df[f"sub_{i}_sample_rate"] = get_metric_per_sub(sub_file, "samples/s")
+            test_df.loc[test_df.index[0], f"sub_{i}_samples_received"] = get_metric_per_sub(sub_file, "total samples").max()
+            test_df.loc[test_df.index[0], f"sub_{i}_samples_lost"] = get_metric_per_sub(sub_file, "lost samples").max()
+
+        # ? Replace NaN with ""
+        test_df = test_df.fillna("")
+
+        if not os.path.exists(summarydir):
+            os.mkdir(summarydir)
+
+        summary_csv_path = os.path.join(summarydir, f"{os.path.basename(test)}_summary.csv")
+        
+        if not os.path.exists(summary_csv_path):
+            test_df.to_csv(summary_csv_path, sep=",")
