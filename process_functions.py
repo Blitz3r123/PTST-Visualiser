@@ -109,7 +109,7 @@ def analyse_tests(testsdir, outputdir):
 def summarise_tests(outputdir, summarydir):
     tests = [ os.path.join(outputdir, _) for _ in os.listdir(outputdir) ]
     
-    for i in track( range( len(tests) ), description="Summarising tests..." ):
+    for i in track( range( len(tests) ), description="Summarising tests...", update_period=1 ):
         test = tests[i]
         
         if test_summary_exists(test, summarydir):
