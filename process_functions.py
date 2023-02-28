@@ -5,20 +5,16 @@ import pandas as pd
 
 def validate_args(testsdir, outputdir, summarydir):
     testsdir_exists_and_isdir = os.path.exists(testsdir) and os.path.isdir(testsdir)
-    outputdir_exists_and_isdir = os.path.exists(outputdir) and os.path.isdir(outputdir)
-    summarydir_exists_and_isdir = os.path.exists(summarydir) and os.path.isdir(summarydir)
     
     if not testsdir_exists_and_isdir:
         console.print(f"{testsdir} does not exist or is not a folder.", style="bold red")
         sys.exit(0)
     
-    if not outputdir_exists_and_isdir:
-        console.print(f"{outputdir} does not exist or is not a folder.", style="bold red")
-        sys.exit(0)
+    if not os.path.exists(outputdir):
+        os.mkdir(outputdir)
         
-    if not summarydir_exists_and_isdir:
-        console.print(f"{summarydir} does not exist or is not a folder.", style="bold red")
-        sys.exit(0)
+    if not os.path.exists(summarydir):
+        os.mkdir(summarydir)
 
 def analyse_tests(testsdir, outputdir):
     testdirs = get_testdirs(testsdir)
