@@ -25,5 +25,6 @@ python app.py
 ```
 
 ## Todo
-[ ] Add checks to see if the actual csv files have a data length greater than like 50 bytes i.e. they aren't empty.
-[ ] Implement the case where multiple progress.log files are found.
+- [x] Add checks to see if the actual csv files have a data length greater than like 50 bytes i.e. they aren't empty.
+- [ ] Show the total number of tests analysed, how many were usable, and how many were discarded
+- [ ] Implement the case where multiple progress.log files are found.
