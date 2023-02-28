@@ -32,7 +32,7 @@ def analyse_tests(testsdir, outputdir):
     successful_tests = []
     
     for test in testdirs:
-        with console.status(f"[{testdirs.index(test) + 1}/{len(testdirs)}] Analysing {test}"):
+        with console.status(f"[{testdirs.index(test) + 1}/{len(testdirs)}] Analysing {test}", refresh_per_second=1):
             
             reports = []
             
