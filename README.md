@@ -10,7 +10,7 @@ This is all for preparation to be used in the PTST Visualiser (`app.py`).
 ## How to use
 
 ### Data Processing
-Run the following on the folder of a test campaign from PTST:
+Run the following on the folder of a test set from PTST (where the folder contains folders - each folde corresponds to a single test):
 
 ```
 python process.py <camp_dir> <output_dir> <summary_dir>
