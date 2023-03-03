@@ -9,6 +9,7 @@ This is all for preparation to be used in the PTST Visualiser (`app.py`).
 
 ## Requirements
 `set_dir` should point to a path that should follow something like:
+```
 📁 set_dir
     📁 test_one
         📄 pub_0.csv
@@ -18,8 +19,9 @@ This is all for preparation to be used in the PTST Visualiser (`app.py`).
     ...
     📁 test_n
     📄 progress.log
+```
 
-**Make sure that there is a progress.log file or it won't work!**
+<span style="color: red;">**Make sure that there is a progress.log file or it won't work!**</span>
 
 ## How to use
 
