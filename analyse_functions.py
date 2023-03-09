@@ -38,60 +38,72 @@ def get_progress_log(testdir):
         # TODO
         None
         
-def get_progress_log_tests(progress_log):
-    try:
-        with open(progress_log, "r") as f:
-            file_contents = f.readlines()
-    except FileNotFoundError as e:
-        console.print(f'{progress_log} does not exist.', style="bold red")
-        sys.exit(0)
-        
-    file_contents = [line.strip() for line in file_contents]
+def get_progress_log_tests(testsdir):
 
-    if len(file_contents) == 0:
-        console.print(f"progress.log is empty for {progress_log}.", style="bold red")
-        sys.exit(0)
-    else:
-        tests = []
-        
-        for line in file_contents:
-            test = {
-                "test": None,
-                "start_time": None,
-                "end_time": None,
-                "duration": None
-            }
-            
-            if 'TEST ' in line:
-                line_index = file_contents.index(line)
-                start_time_index = line_index + 1
-                end_time_index = line_index + 2
-                duration_index = line_index + 3
+    logs = [os.path.join(testsdir, file) for file in os.listdir(testsdir) if 'progress' in file and '.log' in file]
+
+    total_tests = []
+
+    for log in logs:
+        with console.status(f"[{logs.index(log) + 1}/{len(logs)}] Reading multiple progress.log..."):
+            try:
+                with open(log, "r") as f:
+                    file_contents = f.readlines()
+            except FileNotFoundError as e:
+                console.print(f'{log} does not exist.', style="bold red")
+                sys.exit(0)
                 
-                test['test'] = re.sub('TEST #\d*: ', '', line)
+            file_contents = [line.strip() for line in file_contents]
+
+            if len(file_contents) == 0:
+                console.print(f"progress.log is empty for {log}.", style="bold red")
+                sys.exit(0)
+            else:
+                tests = []
                 
-                test["start_time"] = file_contents[start_time_index].replace(
-                    "[1/1]: Started at ", 
-                    ""
-                )
-                test["end_time"] = file_contents[end_time_index].replace(
-                    "[1/1]: Finished at ", 
-                    ""
-                )
-                try:
-                    test["duration"] = file_contents[duration_index].replace(
-                        "[1/1]: ", 
-                        ""
-                    ).replace(
-                        ":", 
-                        ""
-                    )
-                except IndexError as e:
-                    test["duration"] = None
+                for line in file_contents:
+                    test = {
+                        "test": None,
+                        "start_time": None,
+                        "end_time": None,
+                        "duration": None
+                    }
                     
-                tests.append(test)
-                
-    return tests
+                    if 'TEST ' in line:
+                        line_index = file_contents.index(line)
+                        start_time_index = line_index + 1
+                        end_time_index = line_index + 2
+                        duration_index = line_index + 3
+                        
+                        test['test'] = re.sub('TEST #\d*: ', '', line)
+                        
+                        test["start_time"] = file_contents[start_time_index].replace(
+                            "[1/1]: Started at ", 
+                            ""
+                        )
+                        test["end_time"] = file_contents[end_time_index].replace(
+                            "[1/1]: Finished at ", 
+                            ""
+                        )
+                        try:
+                            test["duration"] = file_contents[duration_index].replace(
+                                "[1/1]: ", 
+                                ""
+                            ).replace(
+                                ":", 
+                                ""
+                            )
+                        except IndexError as e:
+                            test["duration"] = None
+                            
+                        tests.append(test)
+
+                total_tests.append(tests)
+
+    # Make total_tests 1-dimensional
+    total_tests = [item for sublist in total_tests for item in sublist]
+
+    return total_tests
 
 def get_expected_duration_s(test):
     if "s_" not in test:
