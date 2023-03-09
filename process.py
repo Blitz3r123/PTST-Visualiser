@@ -17,8 +17,11 @@ if "-delete" in args or "--delete" in args:
     with console.status(f"Deleting everything in {outputdir}..."):
         shutil.rmtree(outputdir)
 
-# ? Find what data is usable and copy it over to outputdir
-analyse_tests(testsdir, outputdir)
+if "-skip-analysis" in args:
+    console.print("Skipping analysis and usable test copying.", style="bold blue")
+else:
+    # ? Find what data is usable and copy it over to outputdir
+    analyse_tests(testsdir, outputdir)
 
 # ? Summarise the test results into the summarydir
 summarise_tests(outputdir, summarydir)
