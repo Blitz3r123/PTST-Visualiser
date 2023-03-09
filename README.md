@@ -34,6 +34,12 @@ python process.py <set_dir> <output_dir> <summary_dir>
 
 Where `<set_dir>` is the path to the test set results (a folder to all tests where each folder is a test) from PTST, `<output_dir>` is the path to a folder where the usable test data will be copied to, and `<summary_dir>` is the folder where all the summaries will be stored.
 
+You can use `-skip-analysis` to skip the test analysis and usable test copy process:
+
+```
+python process.py <set_dir> <output_dir> <summary_dir> -skip-analysis
+```
+
 ### Visualiser
 
 ```
