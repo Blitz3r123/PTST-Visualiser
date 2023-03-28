@@ -128,7 +128,10 @@ def summarise_tests(outputdir, summarydir):
         test_df = pd.DataFrame()
 
         # ? Add the metrics for the entire test
-        latencies = get_latencies(pub0_csv).rename("latency_us")
+        latencies = get_latencies(pub0_csv)
+        if latencies is None:
+            continue    
+        latencies = latencies.rename("latency_us")
         total_throughput_mbps = get_total_sub_metric(sub_files, "mbps").rename("total_throughput_mbps")
         total_sample_rate = get_total_sub_metric(sub_files, "samples/s").rename("total_sample_rate")
         total_samples_received = pd.Series([get_total_sub_metric(sub_files, "total samples").max()]).rename("total_samples_received")
