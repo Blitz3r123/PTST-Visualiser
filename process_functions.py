@@ -106,6 +106,15 @@ def analyse_tests(testsdir, outputdir):
             shutil.copytree(src_dir, dest_dir)
                 
 def summarise_tests(outputdir, summarydir):
+    
+    if not os.path.exists(outputdir):
+        console.print(f"{outputdir} doesn't exist.", style="bold red")
+        sys.exit()
+
+    if not os.path.exists(summarydir):
+        console.print(f"{summarydir} doesn't exist.", style="bold red")
+        sys.exit()
+
     tests = [ os.path.join(outputdir, _) for _ in os.listdir(outputdir) ]
     
     for i in track( range( len(tests) ), description="Summarising tests...", update_period=1 ):
@@ -131,6 +140,7 @@ def summarise_tests(outputdir, summarydir):
         latencies = get_latencies(pub0_csv)
         if latencies is None:
             continue    
+
         latencies = latencies.rename("latency_us")
         total_throughput_mbps = get_total_sub_metric(sub_files, "mbps").rename("total_throughput_mbps")
         total_sample_rate = get_total_sub_metric(sub_files, "samples/s").rename("total_sample_rate")
@@ -147,10 +157,17 @@ def summarise_tests(outputdir, summarydir):
         
         # ? Add the metrics for each sub
         for sub_file in sub_files:
-            throughput_mbps = get_metric_per_sub(sub_file, "mbps").rename(f"sub_{i}_throughput_mbps")
-            sample_rate = get_metric_per_sub(sub_file, "samples/s").rename(f"sub_{i}_sample_rate")
-            total_samples_received = pd.Series([get_metric_per_sub(sub_file, "total samples").rename(f"sub_{i}_total_samples_received").max()])
-            total_samples_lost = pd.Series([get_metric_per_sub(sub_file, "lost samples").rename(f"sub_{i}_total_samples_lost").max()])
+            sub_i = sub_files.index(sub_file)
+            
+            throughput_mbps = get_metric_per_sub(sub_file, "mbps").rename(f"sub_{sub_i}_throughput_mbps")
+            
+            sample_rate = get_metric_per_sub(sub_file, "samples/s").rename(f"sub_{sub_i}_sample_rate")
+            
+            total_samples_received = pd.Series([get_metric_per_sub(sub_file, "total samples").max()])
+            total_samples_received = total_samples_received.rename(f"sub_{sub_i}_total_samples_received")
+            
+            total_samples_lost = pd.Series([get_metric_per_sub(sub_file, "lost samples").max()])
+            total_samples_lost = total_samples_lost.rename(f"sub_{sub_i}_total_samples_lost")
             
             test_df = pd.concat([
                 test_df, 
