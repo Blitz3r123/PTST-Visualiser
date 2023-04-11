@@ -22,7 +22,7 @@ python process.py <raw_dir> <usable_dir> <summaries_dir>
 
 `<usable_dir>`: Path pointing to dir where all usable test data will be copied to. Folder will be created if it doesn't exist.
 
-`<summaries_dir>`: Path pointing to dir where test summaries will be placed.
+`<summaries_dir>`: Path pointing to dir where test summaries will be placed. Folder will be created if it doesn't exist.
 
 ## Data Visualisation
 Dash web application that let's you visualise test data dynamically.
