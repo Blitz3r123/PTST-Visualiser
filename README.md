@@ -25,6 +25,12 @@ python process.py <raw_dir> <usable_dir> <summaries_dir>
 `<summaries_dir>`: Path pointing to dir where test summaries will be placed.
 
 ## Data Visualisation
+Dash web application that let's you visualise test data dynamically.
+
+### Usage
+```bash
+python app.py
+```
 
 <!-- This tool basically takes the results of a test campaign from PTST and does the following:
 
