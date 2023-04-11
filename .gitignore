@@ -6,3 +6,4 @@ test_report.csv
 test_output/
 test_summaries/
 .DS_Store
+*.sh
