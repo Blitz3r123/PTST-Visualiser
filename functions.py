@@ -15,32 +15,32 @@ from random import randrange, sample
 
 console = Console()
 
-def get_testdirs(testpath):
-    testdirs = []
+def get_test_summaries(testpath):
+    test_summaries = []
     errors = []
 
     if not os.path.exists(testpath):
         errors.append(f"The path {testpath} does NOT exist.")
-        return testdirs, errors
+        return test_summaries, errors
 
     testpath_children = [x for x in os.listdir(testpath)]
     testpath_children = [os.path.join(testpath, x) for x in testpath_children]
 
-    testpath_dirs = [os.path.basename(x) for x in testpath_children if os.path.isdir(x)]
     testpath_files = [x for x in testpath_children if not os.path.isdir(x)]
 
-    formatted_testpath_files = ", ".join([os.path.basename(x) for x in testpath_files])
+    if len(testpath_files) == 0:
+        errors.append(f"No files found in {testpath}.")
+        return
 
-    if len(testpath_files) > 0:
-        errors.append(f"{len(testpath_files)} files found in {testpath}: {formatted_testpath_files}")
+    summary_files = [os.path.basename(_).replace("_summary.csv", "") for _ in testpath_files if '_summary.csv' in _]
+    
+    if len(summary_files) == 0:
+        errors.append(f"No summary files found in {testpath}.")
+        return
 
-    if len(testpath_dirs) == 0:
-        errors.append(f"No folders found in {testpath}.")
-        return testdirs, errors
-    else:
-        testdirs = testpath_dirs
+    test_summaries = summary_files
 
-    return testdirs, errors
+    return test_summaries, errors
 
 def get_summary_stats(df, test):
     count = len(df.index)
@@ -487,6 +487,10 @@ def get_comb_output(tests):
     durabilities = list(set(durabilities))
     lat_counts = list(set(lat_counts))
 
+    total_combs = len(durations) * len(datalens) * len(pubs) * len(subs) * len(reliabilities) * len(unicasts) * len(durabilities) * len(lat_counts)
+
+    total_combs = "{:,.0f}".format(total_combs)
+
     table_header = [
         html.Thead(html.Tr([
             html.Th("Variable"),
@@ -536,8 +540,6 @@ def get_comb_output(tests):
         [ html.Td( str(len(lat_counts)) ) ]
     )
     
-    total_combs = len(durations) * len(datalens) * len(pubs) * len(subs) * len(reliabilities) * len(durabilities) * len(lat_counts)
-    total_combs = "{:,.0f}".format(total_combs)
     
     total_row = html.Tr([html.Td("Multiplied Total", style={"fontWeight": "bold"}), html.Td(""), html.Td(total_combs)])
     
