@@ -42,8 +42,12 @@ def analyse_tests(testsdir, outputdir):
             
         # ? Get expected test duration
         expected_test_duration_s = get_expected_duration_s(test)
+        
         # ? Get actual test duration
-        actual_test_duration_s = parse_log_duration_to_s(progress_test["duration"])
+        try:
+            actual_test_duration_s = parse_log_duration_to_s(progress_test["duration"])
+        except KeyError as e:
+            actual_test_duration_s = calculate_duration_s(progress_test['start_time'], progress_test['end_time'])
         
         # ? Compare expected to actual test duration
         if actual_test_duration_s < expected_test_duration_s:
@@ -54,7 +58,11 @@ def analyse_tests(testsdir, outputdir):
         # ? Get actual csv files
         actual_csv_files = get_actual_csv_files(test)
         
-        actual_csv_filepaths = [os.path.join(test, "run_1", _) for _ in actual_csv_files]
+        run_path = os.path.join(test, 'run_1')
+        if not os.path.exists(run_path):
+            actual_csv_filepaths = [os.path.join(test, _) for _ in actual_csv_files]
+        else:
+            actual_csv_filepaths = [os.path.join(test, "run_1", _) for _ in actual_csv_files]
         
         empty_files = []
         for file in actual_csv_filepaths:
@@ -83,7 +91,7 @@ def analyse_tests(testsdir, outputdir):
         # ? Get actual logs
         actual_logs = get_actual_logs(test)
         
-        if len(actual_logs) == 0:
+        if not actual_logs:
             reports.append(f"No logs found.")
             
         if len(reports) == 0:

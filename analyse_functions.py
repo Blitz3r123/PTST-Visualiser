@@ -1,3 +1,4 @@
+import datetime
 import os
 import json
 import sys
@@ -183,11 +184,7 @@ def get_run_contents(test):
     run_dir = os.path.join(test, "run_1")
     
     if not os.path.exists(run_dir):
-        console.print(f'The test path {test} has no run_1 folder.', style="bold red")
-        console.print(f"Here is what is inside {test}:", style="bold red")
-        for item in os.listdir(test):
-            console.print(f"\t{item}", style="bold white")
-        return
+        return os.listdir(test)
     
     run_contents = os.listdir(run_dir)
     
@@ -263,7 +260,10 @@ def get_actual_logs(test):
     
     log_dir = log_dirs[0]
     
-    log_dir = os.path.join(test, "run_1", log_dir)
+    if not os.path.exists(os.path.join( test, 'run_1' )):
+        log_dir = os.path.join(test, log_dir)
+    else:
+        log_dir = os.path.join(test, "run_1", log_dir)
     
     if not os.path.isdir(log_dir):
         console.print(f"{log_dir} is not a folder.", style="bold red")
@@ -276,3 +276,11 @@ def get_actual_logs(test):
     ]
     
     return log_files
+
+def calculate_duration_s(start_timestamp, end_timestamp):
+    start_time = datetime.datetime.strptime(start_timestamp, "%Y-%m-%d %H:%M:%S")
+    end_time = datetime.datetime.strptime(end_timestamp, "%Y-%m-%d %H:%M:%S")
+    
+    return int((end_time - start_time).total_seconds())
+    
+assert(calculate_duration_s("2020-04-04 12:00:00", "2020-04-04 12:10:30") == 630)
