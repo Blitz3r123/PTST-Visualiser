@@ -1,6 +1,18 @@
 # PTST Data Processing + Visualiser
 
-This tool basically takes the results of a test campaign from PTST and does the following:
+2 uses:
+- Data Processing: `process.py`
+- Data Visualisation: `app.py`
+
+## Data Processing
+Script for processing the output of PTST. 
+It analyses the files to find the tests that are usable. 
+Usable tests are tests containing all the expected data files. 
+The script will then take these usable tests and summarise them meaning that it will take the pub and sub `.csv` files and put all the data into one single file per test.
+
+## Data Visualisation
+
+<!-- This tool basically takes the results of a test campaign from PTST and does the following:
 
 1. Check which test results are usable (`analyse_functions.py`).
 2. Summarise the usable results by putting all measurements into a single file (`summarise_functions.py`).
@@ -49,4 +61,4 @@ python app.py
 ## Todo
 - [x] Add checks to see if the actual csv files have a data length greater than like 50 bytes i.e. they aren't empty.
 - [ ] Show the total number of tests analysed, how many were usable, and how many were discarded
-- [ ] Implement the case where multiple progress.log files are found.
+- [ ] Implement the case where multiple progress.log files are found. -->
