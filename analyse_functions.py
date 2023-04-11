@@ -1,4 +1,5 @@
 import os
+import json
 import sys
 import re
 import shutil
@@ -40,12 +41,20 @@ def get_progress_log(testdir):
         
 def get_progress_log_tests(testsdir):
 
-    logs = [os.path.join(testsdir, file) for file in os.listdir(testsdir) if 'progress' in file and '.log' in file]
+    progress_logs = [os.path.join(testsdir, file) for file in os.listdir(testsdir) if 'progress' in file and '.log' in file]
+    progress_jsons = [os.path.join(testsdir, file) for file in os.listdir(testsdir) if 'progress' in file and '.json' in file]
+    
+    if len(progress_jsons) > 0:
+        progress_json = progress_jsons[0]
+        with open(progress_json, 'r') as f:
+            total_tests = json.load(f)
+
+        return total_tests
 
     total_tests = []
 
-    for log in logs:
-        with console.status(f"[{logs.index(log) + 1}/{len(logs)}] Reading multiple progress.log..."):
+    for log in progress_logs:
+        with console.status(f"[{progress_logs.index(log) + 1}/{len(progress_logs)}] Reading multiple progress.log..."):
             try:
                 with open(log, "r") as f:
                     file_contents = f.readlines()
