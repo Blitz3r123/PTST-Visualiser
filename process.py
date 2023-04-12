@@ -19,6 +19,8 @@ raw_dir = args[0]
 usable_dir = args[1]
 summaries_dir = args[2]
 
+console.print(f"Working on {os.path.basename(raw_dir)}...\n\n", style="bold white")
+
 if not os.path.exists(raw_dir):
     console.print(f"The path {raw_dir} doesn't exist.", style="bold red")
     sys.exit()
@@ -124,8 +126,10 @@ for test_dir in test_dirs:
             "issue": f"Expected {expected_csv_count} csv files and found {actual_csv_count} instead."
         })
 
+usable_percentage = int(len(usable_test_dirs) / len(test_dirs) * 100)
+
 # ? 2. Copy usable tests over to usable_dir.
-for i in track(range(len(usable_test_dirs)), description=f"Copying over {len(usable_test_dirs)} usable tests out of {len(test_dirs)} total tests...\n"):
+for i in track(range(len(usable_test_dirs)), description=f"Copying over {len(usable_test_dirs)} usable tests out of {len(test_dirs)} ({usable_percentage}%) total tests...\n"):
     usable_test_dir = usable_test_dirs[i]
     src = usable_test_dir
     dest = os.path.join(usable_dir, os.path.basename(usable_test_dir))
