@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import dash_bootstrap_components as dbc
 import plotly.express as px
@@ -9,10 +10,10 @@ from dash import Dash, html, dcc, Output, Input
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-uni_pc_path = "C:/Users/acwh025/OneDrive - City, University of London/PhD/Experimental Tests/Data/qos_combination_capture_all/perfect_tests"
-qos_combination_capture_v2 = "C:/Users/acwh025/Documents/PhD Data/qos_combination_capture_v2/good_1"
-qos_combination_capture_v2_summaries = "C:/Users/acwh025/Documents/Software Dev/PTST-Summariser/summaries"
-mbp_path = "/Users/kaleem/Downloads/OneDrive_1_03-02-2023"
+if len(sys.argv[1:]) > 0:
+    data_dir = sys.argv[1]
+else:
+    data_dir = ""
 
 app.layout = dbc.Container([
     dbc.Row([
@@ -20,7 +21,7 @@ app.layout = dbc.Container([
             [
                 html.Div(id="testdir", style={"display": "none"}),
                 dbc.Input(
-                    value=qos_combination_capture_v2,
+                    value=data_dir,
                     placeholder="Enter path to tests", 
                     id="testdir-input"
                 ),
@@ -165,14 +166,14 @@ def populate_summary(tests, testdir):
         
         testname = test
         test = os.path.join(testdir, test)
-        lat_df = summary_df["latency"]
+        lat_df = summary_df["latency_us"]
         # ? Convert microseconds to milliseconds
         lat_df = lat_df.loc[:].div(1000)
         lat_dfs.append(lat_df.rename(testname))
         lat_summary_stats = get_summary_stats(lat_df, test)
         lat_summaries.append(lat_summary_stats)
         
-        tp_df = summary_df["total_throughput"].dropna()
+        tp_df = summary_df["total_throughput_mbps"].dropna()
         tp_dfs.append(tp_df.rename(testname))
         tp_summary_stats = get_summary_stats(tp_df, test)
         tp_summaries.append(tp_summary_stats)
