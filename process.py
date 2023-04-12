@@ -130,11 +130,10 @@ for i in track(range(len(usable_test_dirs)), description=f"Copying over {len(usa
     src = usable_test_dir
     dest = os.path.join(usable_dir, os.path.basename(usable_test_dir))
     
-    if not os.path.exists(dest):
-        os.makedirs(dest)
-    
     try:
-        shutil.copytree(src, dest, dirs_exist_ok=True)
+        if not os.path.exists(dest):
+            os.makedirs(dest)
+            shutil.copytree(src, dest, dirs_exist_ok=True)
     except FileExistsError as e:
         continue
 
@@ -153,7 +152,6 @@ for i in track( range( len(usable_tests) ), description="Summarising tests...", 
     pub_files = [(os.path.join( test, _ )) for _ in os.listdir(test) if "pub" in _]
     
     if len(pub_files) == 0:
-        pprint(os.listdir(test))
         console.print(f"{test} has no pub files.", style="bold red")
         continue
 
