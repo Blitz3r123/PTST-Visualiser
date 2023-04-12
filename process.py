@@ -125,7 +125,7 @@ for test_dir in test_dirs:
         })
 
 # ? 2. Copy usable tests over to usable_dir.
-for i in track(range(len(usable_test_dirs)), description="Copying over usable tests...\n"):
+for i in track(range(len(usable_test_dirs)), description=f"Copying over {len(usable_test_dirs)} usable tests out of {len(test_dirs)} total tests...\n"):
     usable_test_dir = usable_test_dirs[i]
     src = usable_test_dir
     dest = os.path.join(usable_dir, os.path.basename(usable_test_dir))
