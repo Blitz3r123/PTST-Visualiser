@@ -32,6 +32,14 @@ Dash web application that let's you visualise test data dynamically.
 python app.py
 ```
 
+You can also pass in a path to the tests folder like so:
+
+```bash
+python app.py <tests_dir>
+```
+
+This will automatically fill in the value of the input.
+
 <!-- This tool basically takes the results of a test campaign from PTST and does the following:
 
 1. Check which test results are usable (`analyse_functions.py`).
