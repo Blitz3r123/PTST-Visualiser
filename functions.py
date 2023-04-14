@@ -664,3 +664,35 @@ def get_total_samples_received_summary_table(tests, testdir, total_dfs, lost_dfs
     summary_table_output = dbc.Table(table_header + table_body, bordered=True)
     
     return html.Div([ summary_table_output, barchart_output ])
+
+def generate_setting_selection(testpath):
+    tests = [_.replace("_summary.csv", "") for _ in os.listdir(testpath)]
+    
+    if len(tests) == 0:
+        return ""
+    
+    result = []
+    for item in tests:
+        parts = item.split('_')
+        if len(result) < len(parts):
+            for i in range(len(parts)):
+                result.append([parts[i]])
+        else:
+            for i in range(len(parts)):
+                result[i].append(parts[i])
+
+    for i in range(len(result)):
+        result[i] = list(set(result[i]))
+
+    setting_dropdowns = dbc.Row([
+        dbc.Col([
+            dcc.Dropdown(
+                id='dropdown-{}'.format(i),
+                options=[{'label': val, 'value': val} for val in sorted(sublist)],
+                value=sublist[0],
+                style={"margin-bottom": "1vh", "width": "100%"}
+            )
+        ]) for i, sublist in enumerate(result)
+    ], style={"display": "flex", "justify-content": "space-evenly"})
+    
+    return setting_dropdowns

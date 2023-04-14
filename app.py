@@ -32,6 +32,7 @@ app.layout = dbc.Container([
                     placeholder="Select one or more tests",
                     style={"marginTop": "1vh"}
                 ),
+                html.Div(id="setting-selection-container", style={"margin-top": "1vh"}),
                 html.Div([dbc.ListGroup(
                     generate_toc()
                 )]),
@@ -64,7 +65,8 @@ app.layout = dbc.Container([
         Output("test-dropdown", "options"),
         Output("combinations-container", "children"),
         Output("testdir", "children"),
-        Output("alert-container", "children")
+        Output("alert-container", "children"),
+        Output("setting-selection-container", "children")
     ],
     Input("testdir-input", "value")
 )
@@ -87,7 +89,7 @@ def populate_dropdown(testpath):
     else:
         alert_output = []
     
-    return test_summaries, comb_output, testpath, alert_output
+    return test_summaries, comb_output, testpath, alert_output, generate_setting_selection(testpath)
 
 @app.callback(
     [
