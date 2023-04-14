@@ -32,7 +32,13 @@ app.layout = dbc.Container([
                     placeholder="Select one or more tests",
                     style={"marginTop": "1vh"}
                 ),
+                html.Div(
+                    html.P("You can look for specific settings and plot it using the below:", style={"color": "grey", "margin-top": "1vh", "font-size": "8pt"})
+                ),
                 html.Div(id="setting-selection-container", style={"margin-top": "1vh"}),
+                html.Div(
+                    dbc.Button("Plot", color="primary", style={"width": "100%"}, id="setting-selector-button")
+                ),
                 html.Div([dbc.ListGroup(
                     generate_toc()
                 )]),
