@@ -219,12 +219,12 @@ def populate_summary(tests, testdir):
     lat_transient = get_transient_analysis(lat_dfs , "Latency (ms)")
 
     tp_summary_table = generate_summary_table(tp_summaries)
-    tp_boxplot = get_plot("box", tp_dfs, "Test", "Total Throughput (mbps)") if tp_dfs else None
-    tp_dotplot = get_plot("dot", tp_dfs, "Increasing Time In Seconds", "Total Throughput (mbps)") if tp_dfs else None
-    tp_lineplot = get_plot("line", tp_dfs, "Increasing Time In Seconds", "Total Throughput (mbps)") if tp_dfs else None
-    tp_histogram = get_plot("histogram", tp_dfs, "Total Throughput (mbps)", "Number of Observations") if tp_dfs else None
-    tp_cdf = get_plot("cdf", tp_dfs, "Total Throughput (mbps)", "F(x)") if tp_dfs else None
-    tp_transient = get_transient_analysis(tp_dfs, "Total Throughput (mbps)")
+    tp_boxplot = get_plot("box", tp_dfs, "Test", "Total Throughput (Mbps)") if tp_dfs else None
+    tp_dotplot = get_plot("dot", tp_dfs, "Increasing Time In Seconds", "Total Throughput (Mbps)") if tp_dfs else None
+    tp_lineplot = get_plot("line", tp_dfs, "Increasing Time In Seconds", "Total Throughput (Mbps)") if tp_dfs else None
+    tp_histogram = get_plot("histogram", tp_dfs, "Total Throughput (Mbps)", "Number of Observations") if tp_dfs else None
+    tp_cdf = get_plot("cdf", tp_dfs, "Total Throughput (Mbps)", "F(x)") if tp_dfs else None
+    tp_transient = get_transient_analysis(tp_dfs, "Total Throughput (Mbps)")
     
     sample_rate_summary_table = generate_summary_table(sample_rate_summaries)
     sr_boxplot = get_plot("box", sr_dfs, "Test", "Sample Rate (samples/s)") if sr_dfs else None
