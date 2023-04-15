@@ -6,7 +6,7 @@ import plotly.express as px
 
 from pprint import pprint
 from functions import *
-from dash import Dash, html, dcc, Output, Input
+from dash import Dash, html, dcc, Output, Input, State
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -36,6 +36,7 @@ app.layout = dbc.Container([
                     html.P("You can look for specific settings and plot it using the below:", style={"color": "grey", "margin-top": "1vh", "font-size": "8pt"})
                 ),
                 html.Div(id="setting-selection-container", style={"margin-top": "1vh"}),
+                html.Div(id="setting-selection-alert-container"),
                 html.Div(
                     dbc.Button("Plot", color="primary", style={"width": "100%"}, id="setting-selector-button")
                 ),
@@ -139,16 +140,45 @@ def populate_dropdown(testpath):
         Output("lost-samples-cdf-output", "children"),
         Output("lost-samples-transient-output", "children"),
         
+        Output("setting-selection-alert-container", "children")
+        
         # Output("log-timeline-output", "children")
     ],
     [
         Input("test-dropdown", "value"),
         Input("testdir", "children"),
-    ]
+        Input("setting-selector-button", "n_clicks")
+    ],
+    State("setting-selection-container", "children")
 )
-def populate_summary(tests, testdir):
+def populate_summary(tests, testdir, n_clicks, children):
+
+    test_selection_alert = ""
+
+    if n_clicks is not None:
+        values = []
+        
+        children = children['props']['children']
+        
+        for child in children:
+            if child['type'] == 'Col':
+                dropdowns = child['props']['children']
+                for dropdown in dropdowns:
+                    if dropdown['type'] == 'Dropdown':
+                        values.append(dropdown['props']['value'])
+        
+        test_selection = "_".join(values)
+        
+        # ? Check if test_selection exists
+        test_selection_exists = len([_ for _ in os.listdir(testdir) if test_selection in _]) > 0
+        
+        if test_selection_exists:
+            tests = tests.append(test_selection) if tests is not None else [test_selection]
+        else:
+            test_selection_alert = dbc.Alert(f"{test_selection} doesn't exist.", dismissable=True, color='danger')
+
     if tests is None:
-        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", test_selection_alert
     
     lat_summaries = []
     tp_summaries = []
