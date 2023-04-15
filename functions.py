@@ -187,8 +187,22 @@ def generate_summary_table(summaries):
     ], bordered=True, hover=True)
     
 def generate_toc_section(title, metric):
-    if "lost-samples" in metric:
+    
+    if "lost-samples" in metric or "total-samples" in metric:
         summary_link = ""
+        dotplot_link = ""
+        lineplot_link = ""
+        histogram_link = ""
+        cdf_link = ""
+        transient_link = ""
+        
+        boxplot_link = dbc.ListGroupItem(
+            f"{title} Bar Chart",
+            href=f"#{metric}-barchart-title",
+            external_link=True,
+            style={"marginTop": "0.5vh"}
+        )
+    
     else:
         summary_link = dbc.ListGroupItem(
             title + " Summary Stats",
@@ -197,11 +211,6 @@ def generate_toc_section(title, metric):
             style={"marginTop": "0.5vh"},   
         )
 
-    if "total-samples-received" in metric:
-        boxplot_link = ""
-    elif "lost-samples" in metric:
-        boxplot_link = ""
-    else:
         boxplot_link = dbc.ListGroupItem(
             title + " Box Plots",
             href="#" +metric+ "-boxplot-title",
@@ -209,39 +218,34 @@ def generate_toc_section(title, metric):
             style={"marginTop": "0.5vh"}
         )
     
-    dotplot_link = dbc.ListGroupItem(
-        title + " Dot Plots",
-        href="#" +metric+ "-dotplot-title",
-        external_link=True,
-        style={"marginTop": "0.5vh"},
-    )
+        dotplot_link = dbc.ListGroupItem(
+            title + " Dot Plots",
+            href="#" +metric+ "-dotplot-title",
+            external_link=True,
+            style={"marginTop": "0.5vh"},
+        )
+        
+        lineplot_link = dbc.ListGroupItem(
+            title + " Line Plots",
+            href="#" +metric+ "-lineplot-title",
+            external_link=True,
+            style={"marginTop": "0.5vh"}
+        )
+        
+        histogram_link = dbc.ListGroupItem(
+            title + " Histograms",
+            href="#" +metric+ "-histogram-title",
+            external_link=True,
+            style={"marginTop": "0.5vh"}
+        )
+        
+        cdf_link = dbc.ListGroupItem(
+            title + " Empirical Cumulative Distribution Functions",
+            href="#" +metric+ "-cdf-title",
+            external_link=True,
+            style={"marginTop": "0.5vh"}
+        )
     
-    lineplot_link = dbc.ListGroupItem(
-        title + " Line Plots",
-        href="#" +metric+ "-lineplot-title",
-        external_link=True,
-        style={"marginTop": "0.5vh"}
-    )
-    
-    histogram_link = dbc.ListGroupItem(
-        title + " Histograms",
-        href="#" +metric+ "-histogram-title",
-        external_link=True,
-        style={"marginTop": "0.5vh"}
-    )
-    
-    cdf_link = dbc.ListGroupItem(
-        title + " Empirical Cumulative Distribution Functions",
-        href="#" +metric+ "-cdf-title",
-        external_link=True,
-        style={"marginTop": "0.5vh"}
-    )
-    
-    if "total-samples-received" in metric:
-        transient_link = ""
-    elif "lost-samples" in metric:
-        transient_link = ""
-    else:
         transient_link = dbc.ListGroupItem(
             title + " Transient Analyses",
             href="#" +metric+ "-transient-title",
@@ -273,54 +277,51 @@ def generate_toc():
     for item in lists:
         output = output + item 
         
-    output = output + [html.H5("Logs"), html.A(dbc.ListGroupItem("Log Timeline"), href="#log-timeline-title", style={"paddingBottom": "3vh"})]
-        
     return output
 
 def generate_metric_output_content(title, metric):
-    if "lost-samples" in metric:
-        summary_output = html.Div(id=metric + "-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+    if "lost-samples" in metric or "total-samples" in metric:
+        summary_output = ""
+        boxplot_output = html.Div([
+            html.H3(f"{title} Bar Chart", id=f"{metric}-bar-graph-title"),
+            html.Div(id=f"{metric}-barchart-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
+        ])
+        lineplot_output = ""
+        dotplot_output = ""
+        histogram_output = ""
+        cdf_output = ""
+        transient_output = ""
     else:
         summary_output = html.Div([
             html.H3(title + " Summary Stats", id=metric + "-summary-title"),
             html.Div(id=metric + "-summary-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
         ])
     
-    if "total-samples-received" in metric:
-        boxplot_output = html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
-    elif "lost-samples" in metric:
-        boxplot_output = html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
-    else:
         boxplot_output = html.Div([
             html.H3(title + " Box Plots", id=metric + "-boxplot-title"),
             html.Div(id=metric + "-boxplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
         ])
     
-    lineplot_output = html.Div([
-        html.H3(title + " Line Plots", id=metric + "-lineplot-title"),
-        html.Div(id=metric + "-lineplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ])
+        lineplot_output = html.Div([
+            html.H3(title + " Line Plots", id=metric + "-lineplot-title"),
+            html.Div(id=metric + "-lineplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        ])
+        
+        dotplot_output = html.Div([
+            html.H3(title + " Dot Plots", id=metric + "-dotplot-title"),
+            html.Div(id=metric + "-dotplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        ])
+        
+        histogram_output = html.Div([
+            html.H3(title + " Histograms", id=metric + "-histogram-title"),
+            html.Div(id=metric + "-histogram-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        ])
+        
+        cdf_output = html.Div([
+            html.H3(title + " Empirical Cumulative Distribution Functions", id=metric + "-cdf-title"),
+            html.Div(id=metric + "-cdf-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
+        ])
     
-    dotplot_output = html.Div([
-        html.H3(title + " Dot Plots", id=metric + "-dotplot-title"),
-        html.Div(id=metric + "-dotplot-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ])
-    
-    histogram_output = html.Div([
-        html.H3(title + " Histograms", id=metric + "-histogram-title"),
-        html.Div(id=metric + "-histogram-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ])
-    
-    cdf_output = html.Div([
-        html.H3(title + " Empirical Cumulative Distribution Functions", id=metric + "-cdf-title"),
-        html.Div(id=metric + "-cdf-output", style={"maxWidth": "100vw", "overflowX": "scroll"}),
-    ])
-    
-    if "total-samples-received" in metric:
-        transient_output = html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
-    elif "lost-samples" in metric:
-        transient_output = html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
-    else:
         transient_output = html.Div([
             html.H3(title + " Transient Analyses", id=metric + "-transient-title"),
             html.Div(id=metric + "-transient-output", style={"maxWidth": "100vw", "overflowX": "scroll"})

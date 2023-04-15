@@ -54,11 +54,7 @@ app.layout = dbc.Container([
                 generate_metric_output_content("Throughput", "throughput"),
                 generate_metric_output_content("Sample Rate", "sample-rate"),
                 generate_metric_output_content("Total Samples", "total-samples-received"),
-                generate_metric_output_content("Lost Samples", "lost-samples"),
-                html.Div([
-                    html.H3("Logs Timeline", id="log-timeline-title"),
-                    html.Div(id="log-timeline-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
-                ])
+                generate_metric_output_content("Lost Samples", "lost-samples")
             ], 
             width=9,
             style={"maxHeight": "100vh", "overflowY": "scroll"}
@@ -163,22 +159,10 @@ def get_test_selection(n_clicks, tests, testdir, children):
         Output("sample-rate-cdf-output", "children"),
         Output("sample-rate-transient-output", "children"),
         
-        Output("total-samples-received-summary-output", "children"),
-        Output("total-samples-received-boxplot-output", "children"),
-        Output("total-samples-received-dotplot-output", "children"),
-        Output("total-samples-received-lineplot-output", "children"),
-        Output("total-samples-received-histogram-output", "children"),
-        Output("total-samples-received-cdf-output", "children"),
-        Output("total-samples-received-transient-output", "children"),
+        Output("total-samples-received-barchart-output", "children"),
         
-        Output("lost-samples-summary-output", "children"),
-        Output("lost-samples-boxplot-output", "children"),
-        Output("lost-samples-dotplot-output", "children"),
-        Output("lost-samples-lineplot-output", "children"),
-        Output("lost-samples-histogram-output", "children"),
-        Output("lost-samples-cdf-output", "children"),
-        Output("lost-samples-transient-output", "children")        
-        # Output("log-timeline-output", "children")
+        Output("lost-samples-barchart-output", "children"),
+        
     ],
     [
         Input("test-dropdown", "value"),
@@ -188,14 +172,13 @@ def get_test_selection(n_clicks, tests, testdir, children):
 def populate_summary(tests, testdir):
 
     if tests is None:
-        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
     sample_rate_summaries = []
     total_samples_received_summaries = []
     lost_samples_summaries = []
-    # log_timelines = []
     
     lat_dfs = []
     tp_dfs = []
@@ -231,33 +214,16 @@ def populate_summary(tests, testdir):
         sample_rate_summary_stats = get_summary_stats(sample_rate_df, test)
         sample_rate_summaries.append(sample_rate_summary_stats)
         
-        # total_samples_received_df = summary_df["total_samples_received"].dropna()
         total_samples_received_df = get_total_samples_received_per_sub(summary_df)
         total_samples_received_dfs.append(total_samples_received_df.rename(testname))
         total_samples_received_summary_stats = get_summary_stats(total_samples_received_df, test)
         total_samples_received_summaries.append(total_samples_received_summary_stats)
         
-        # lost_samples_df = summary_df["total_samples_lost"].dropna()
         lost_samples_df = get_lost_samples_received_per_sub(summary_df)
         lost_samples_dfs.append(lost_samples_df.rename(testname))
         lost_samples_summary_stats = get_summary_stats(lost_samples_df, test)
         lost_samples_summaries.append(lost_samples_summary_stats)
         
-        # cpu_log_df = get_cpu_log_df(test)
-
-        # fig = px.timeline(cpu_log_df, x_start="start", x_end="end", y="vm", color="vm")
-        
-        # fig.update_layout(xaxis=dict(
-        #     title="Log Timestamp",
-        #     tickformat="%H:%M:%S"
-        # ))
-            
-        # log_timeline = html.Div([
-        #     html.H5(os.path.basename(test)),
-        #     dcc.Graph(figure=fig)
-        # ])
-        # log_timelines.append(log_timeline)
-    
     lat_summary_table = generate_summary_table(lat_summaries)
     lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (ms)") if lat_dfs else None
     lat_dotplot = get_plot("dot", lat_dfs, "Number of Observations", "Latency (ms)") if lat_dfs else None
@@ -282,29 +248,14 @@ def populate_summary(tests, testdir):
     sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (samples/s)", "F(x)") if sr_dfs else None
     sr_transient = get_transient_analysis(sr_dfs, "Sample Rates (samples/s)")
     
-    # total_samples_received_summary_table = get_total_samples_received_summary_table(tests, testdir, total_samples_received_dfs, lost_samples_dfs)
-    total_samples_received_summary_table = ""
-    # total_samples_received_boxplot = get_plot("box", total_samples_received_dfs, "Test", "Total Samples Received") if total_samples_received_dfs else None
-    total_samples_received_boxplot = ""
-    total_samples_received_dotplot = get_plot("dot", total_samples_received_dfs, "Increasing Time In Seconds", "Total Samples Received") if total_samples_received_dfs else None
-    total_samples_received_lineplot = get_plot("line", total_samples_received_dfs, "Increasing Time", "Total Samples Received") if total_samples_received_dfs else None
-    total_samples_received_histogram = get_plot("histogram", total_samples_received_dfs, "Total Samples Received", "Number of Observations") if total_samples_received_dfs else None
-    total_samples_received_cdf = get_plot("cdf", total_samples_received_dfs, "Total Samples Received", "F(x)") if total_samples_received_dfs else None
-    total_samples_received_transient = None
+    # TODO
+    total_samples_received_barchart = ""
     
-    # lost_samples_summary_table = generate_summary_table(lost_samples_summaries)
-    lost_samples_summary_table = ""
-    # lost_samples_boxplot = get_plot("box", lost_samples_dfs, "Test", "Lost Samples") if lost_samples_dfs else None
-    lost_samples_boxplot = ""
-    lost_samples_dotplot = get_plot("dot", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
-    lost_samples_lineplot = get_plot("line", lost_samples_dfs, "Increasing Time In Seconds", "Lost Samples") if lost_samples_dfs else None
-    lost_samples_histogram = get_plot("histogram", lost_samples_dfs, "Lost Samples", "Number of Observations") if lost_samples_dfs else None
-    lost_samples_cdf = get_plot("cdf", lost_samples_dfs, "Lost Samples", "F(x)") if lost_samples_dfs else None
-    lost_samples_transient = None
+    # TODO
+    lost_samples_received_barchart = ""
     
-    # log_timelines = html.Div(log_timelines)
         
-    return lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_summary_table, total_samples_received_boxplot, total_samples_received_dotplot, total_samples_received_lineplot, total_samples_received_histogram, total_samples_received_cdf, total_samples_received_transient, lost_samples_summary_table, lost_samples_boxplot, lost_samples_dotplot, lost_samples_lineplot, lost_samples_histogram, lost_samples_cdf, lost_samples_transient
+    return lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_barchart, lost_samples_received_barchart
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")
