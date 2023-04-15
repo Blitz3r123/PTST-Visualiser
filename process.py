@@ -1,3 +1,4 @@
+import json
 import os
 import pandas as pd
 import shutil
@@ -24,6 +25,13 @@ console.print(f"Working on {os.path.basename(raw_dir)}...\n\n", style="bold whit
 if not os.path.exists(raw_dir):
     console.print(f"The path {raw_dir} doesn't exist.", style="bold red")
     sys.exit()
+
+if "debug" in args:
+    try:
+        shutil.rmtree(usable_dir)
+        shutil.rmtree(summaries_dir)
+    except FileNotFoundError as e:
+        None
 
 def get_expected_csv_count_from_testname(testname):
     split = testname.split("_")
@@ -101,6 +109,25 @@ def test_summary_exists(test, summaries_dir):
     summary_path = os.path.join(summaries_dir, f"{testname}_summary.csv")
     return os.path.exists(summary_path)
 
+def get_participant_allocation_per_machine(type, test):
+    config = os.path.join(test, 'config.json')
+    
+    if not os.path.exists(config):
+        return []
+    
+    with open(config, 'r') as f:
+        config = json.load(f)
+        
+    machines = config['machines']
+    
+    allocation_list = []
+    
+    for machine in machines:
+        scripts = machine['scripts']
+        allocation_list.append(scripts.count(f"-{type}"))
+        
+    return allocation_list
+
 """
 1. Find usable tests.
 2. Copy usable tests over to usable_dir.
@@ -175,13 +202,17 @@ for i in track( range( len(usable_tests) ), description="Summarising tests...", 
     total_sample_rate = get_total_sub_metric(sub_files, "samples/s").rename("total_sample_rate")
     total_samples_received = pd.Series([get_total_sub_metric(sub_files, "total samples").max()]).rename("total_samples_received")
     total_samples_lost = pd.Series([get_total_sub_metric(sub_files, "lost samples").max()]).rename("total_samples_lost")
+    pub_allocation_per_machine = pd.Series(get_participant_allocation_per_machine('pub', test)).rename("pub_allocation_per_machine")
+    sub_allocation_per_machine = pd.Series(get_participant_allocation_per_machine('sub', test)).rename("sub_allocation_per_machine")
 
     test_df = pd.concat([
         latencies,
         total_throughput_mbps,
         total_sample_rate,
         total_samples_received,    
-        total_samples_lost    
+        total_samples_lost,
+        pub_allocation_per_machine,
+        sub_allocation_per_machine
     ], axis=1)
     
     # ? Add the metrics for each sub
