@@ -231,11 +231,11 @@ def populate_summary(tests, testdir):
         sample_rate_summary_stats = get_summary_stats(sample_rate_df, test)
         sample_rate_summaries.append(sample_rate_summary_stats)
         
-        total_samples_received_df = summary_df["total_samples_received"].dropna()
+        # total_samples_received_df = summary_df["total_samples_received"].dropna()
+        total_samples_received_df = get_total_samples_received_per_sub(summary_df)
         total_samples_received_dfs.append(total_samples_received_df.rename(testname))
         total_samples_received_summary_stats = get_summary_stats(total_samples_received_df, test)
         total_samples_received_summaries.append(total_samples_received_summary_stats)
-        
         
         lost_samples_df = summary_df["total_samples_lost"].dropna()
         lost_samples_dfs.append(lost_samples_df.rename(testname))
@@ -256,7 +256,6 @@ def populate_summary(tests, testdir):
         #     dcc.Graph(figure=fig)
         # ])
         # log_timelines.append(log_timeline)
-    
     
     lat_summary_table = generate_summary_table(lat_summaries)
     lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (ms)") if lat_dfs else None

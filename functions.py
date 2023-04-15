@@ -696,3 +696,12 @@ def generate_setting_selection(testpath):
     ], style={"display": "flex", "justify-content": "space-evenly"})
     
     return setting_dropdowns
+
+def get_total_samples_received_per_sub(summary_df):
+    total_samples_df = pd.DataFrame(columns=["sub", "total_samples_received"])
+    total_samples_cols = [col for col in summary_df.columns if 'sub_' in col and 'total_samples_received' in col]
+    
+    for col in total_samples_cols:
+        total_samples_df.loc[len(total_samples_df)] = [col.replace("_total_samples_received", ""), summary_df[col].max()]
+        
+    return total_samples_df['total_samples_received']
