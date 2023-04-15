@@ -718,3 +718,6 @@ def get_lost_samples_received_per_sub(summary_df):
         lost_samples_df.loc[len(lost_samples_df)] = [col.replace("_lost_samples", ""), summary_df[col].max()]
         
     return lost_samples_df['lost_samples'].astype(float)
+
+def get_participant_allocation_output(testpath):
+    pprint(testpath)

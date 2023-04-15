@@ -50,6 +50,7 @@ app.layout = dbc.Container([
             [
                 html.Div(id="alert-container"),
                 html.Div(id="combinations-container"),
+                html.Div(id="participant-allocation-container"),
                 generate_metric_output_content("Latency", "latency"),
                 generate_metric_output_content("Throughput", "throughput"),
                 generate_metric_output_content("Sample Rate", "sample-rate"),
@@ -66,6 +67,7 @@ app.layout = dbc.Container([
     [
         Output("test-dropdown", "options"),
         Output("combinations-container", "children"),
+        Output("participant-allocation-container", "children"),
         Output("testdir", "children"),
         Output("alert-container", "children"),
         Output("setting-selection-container", "children")
@@ -81,6 +83,8 @@ def populate_dropdown(testpath):
     
     comb_output = get_comb_output(test_summaries)
         
+    participant_allocation_output = get_participant_allocation_output(testpath)
+        
     if len(errors) > 0:
         alerts = []
         
@@ -91,7 +95,7 @@ def populate_dropdown(testpath):
     else:
         alert_output = []
     
-    return test_summaries, comb_output, testpath, alert_output, generate_setting_selection(testpath)
+    return test_summaries, comb_output, participant_allocation_output, testpath, alert_output, generate_setting_selection(testpath)
 
 @app.callback(
     Output("test-dropdown", "value"),
