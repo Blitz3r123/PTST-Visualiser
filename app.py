@@ -110,7 +110,9 @@ def populate_dropdown(testpath):
 )
 def get_test_selection(n_clicks, tests, testdir, children):
     
-    if n_clicks is not None:
+    if n_clicks is None:
+        return tests
+    else:
         values = []
         
         children = children['props']['children']
