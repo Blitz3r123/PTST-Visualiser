@@ -67,7 +67,6 @@ app.layout = dbc.Container([
     [
         Output("test-dropdown", "options"),
         Output("combinations-container", "children"),
-        Output("participant-allocation-container", "children"),
         Output("testdir", "children"),
         Output("alert-container", "children"),
         Output("setting-selection-container", "children")
@@ -83,7 +82,6 @@ def populate_dropdown(testpath):
     
     comb_output = get_comb_output(test_summaries)
         
-    participant_allocation_output = get_participant_allocation_output(testpath)
         
     if len(errors) > 0:
         alerts = []
@@ -95,7 +93,7 @@ def populate_dropdown(testpath):
     else:
         alert_output = []
     
-    return test_summaries, comb_output, participant_allocation_output, testpath, alert_output, generate_setting_selection(testpath)
+    return test_summaries, comb_output, testpath, alert_output, generate_setting_selection(testpath)
 
 @app.callback(
     Output("test-dropdown", "value"),
@@ -139,6 +137,8 @@ def get_test_selection(n_clicks, tests, testdir, children):
 
 @app.callback(
     [
+        Output("participant-allocation-container", "children"),
+        
         Output("latency-summary-output", "children"),
         Output("latency-boxplot-output", "children"),
         Output("latency-dotplot-output", "children"),
@@ -176,7 +176,7 @@ def get_test_selection(n_clicks, tests, testdir, children):
 def populate_summary(tests, testdir):
 
     if tests is None:
-        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
@@ -187,6 +187,7 @@ def populate_summary(tests, testdir):
     sr_dfs = []
     total_samples_received_dfs = []
     lost_samples_dfs = []
+    participant_allocation_dfs = []
     
     for test in tests:
         summary_file = os.path.join(testdir, f"{test}_summary.csv")
@@ -199,6 +200,11 @@ def populate_summary(tests, testdir):
         
         testname = test
         test = os.path.join(testdir, test)
+        
+        participant_allocation_dfs.append({
+            testname: get_participant_allocation_df(summary_df)
+        })
+        
         lat_df = summary_df["latency_us"]
         # ? Convert microseconds to milliseconds
         lat_df = lat_df.loc[:].div(1000)
@@ -221,6 +227,8 @@ def populate_summary(tests, testdir):
         
         lost_samples_df = get_lost_samples_received_per_sub(summary_df)
         lost_samples_dfs.append(lost_samples_df.rename(testname))
+
+    participant_allocation_output = get_participant_allocation_output(participant_allocation_dfs)
 
     lat_summary_table = generate_summary_table(lat_summaries)
     lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (ms)") if lat_dfs else None
@@ -250,7 +258,7 @@ def populate_summary(tests, testdir):
     
     lost_samples_received_barchart = get_plot("bar", lost_samples_dfs, "sub_n", "# of samples")
         
-    return lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_barchart, lost_samples_received_barchart
+    return participant_allocation_output, lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_barchart, lost_samples_received_barchart
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")

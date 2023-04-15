@@ -719,5 +719,36 @@ def get_lost_samples_received_per_sub(summary_df):
         
     return lost_samples_df['lost_samples'].astype(float)
 
-def get_participant_allocation_output(testpath):
-    pprint(testpath)
+def get_participant_allocation_df(df):
+    pub_alloc = df['pub_allocation_per_machine'].dropna()
+    sub_alloc = df['sub_allocation_per_machine'].dropna()
+
+    alloc_df = pd.DataFrame({
+        'pub_alloc': pub_alloc,
+        'sub_alloc': sub_alloc,
+    })
+    
+    return alloc_df
+    
+def generate_participant_allocation_table(df, title):
+    df.insert(0, 'Machine', ['Machine ' + str(i + 1) for i in range(len(df.index))])
+    
+    return html.Div([
+        html.H5(f"{title}"),
+        dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
+    ])
+    
+def get_participant_allocation_output(dfs):
+    children = [html.H3("Participant Allocation Per Machine")]
+    for df in dfs:
+        for key, value in df.items():
+            testname = key
+            df = value
+            df = df.rename(columns={
+                "pub_alloc": "Pub Allocation",
+                "sub_alloc": "Sub Allocation",
+            })
+            children.append(generate_participant_allocation_table(df, testname))
+            
+    return html.Div(children=children)
+        
