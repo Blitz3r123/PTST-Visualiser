@@ -177,8 +177,6 @@ def populate_summary(tests, testdir):
     lat_summaries = []
     tp_summaries = []
     sample_rate_summaries = []
-    total_samples_received_summaries = []
-    lost_samples_summaries = []
     
     lat_dfs = []
     tp_dfs = []
@@ -216,14 +214,10 @@ def populate_summary(tests, testdir):
         
         total_samples_received_df = get_total_samples_received_per_sub(summary_df)
         total_samples_received_dfs.append(total_samples_received_df.rename(testname))
-        total_samples_received_summary_stats = get_summary_stats(total_samples_received_df, test)
-        total_samples_received_summaries.append(total_samples_received_summary_stats)
         
         lost_samples_df = get_lost_samples_received_per_sub(summary_df)
         lost_samples_dfs.append(lost_samples_df.rename(testname))
-        lost_samples_summary_stats = get_summary_stats(lost_samples_df, test)
-        lost_samples_summaries.append(lost_samples_summary_stats)
-        
+
     lat_summary_table = generate_summary_table(lat_summaries)
     lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (ms)") if lat_dfs else None
     lat_dotplot = get_plot("dot", lat_dfs, "Number of Observations", "Latency (ms)") if lat_dfs else None
@@ -248,12 +242,9 @@ def populate_summary(tests, testdir):
     sr_cdf = get_plot("cdf", sr_dfs, "Sample Rate (samples/s)", "F(x)") if sr_dfs else None
     sr_transient = get_transient_analysis(sr_dfs, "Sample Rates (samples/s)")
     
-    # TODO
-    total_samples_received_barchart = ""
+    total_samples_received_barchart = get_plot("bar", total_samples_received_dfs, "sub_n", "# of samples")
     
-    # TODO
-    lost_samples_received_barchart = ""
-    
+    lost_samples_received_barchart = get_plot("bar", lost_samples_dfs, "sub_n", "# of samples")
         
     return lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_barchart, lost_samples_received_barchart
 

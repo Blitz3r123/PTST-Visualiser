@@ -283,7 +283,7 @@ def generate_metric_output_content(title, metric):
     if "lost-samples" in metric or "total-samples" in metric:
         summary_output = ""
         boxplot_output = html.Div([
-            html.H3(f"{title} Bar Chart", id=f"{metric}-bar-graph-title"),
+            html.H3(f"{title} Bar Chart", id=f"{metric}-barchart-title"),
             html.Div(id=f"{metric}-barchart-output", style={"maxWidth": "100vw", "overflowX": "scroll"})
         ])
         lineplot_output = ""
@@ -348,6 +348,9 @@ def get_plot(type, dfs, x_title, y_title):
 
     if "box" in type:
         fig = px.box(df, log_y=True)
+    elif "bar" in type:
+        fig = px.bar(df)
+        fig.update_layout(barmode="overlay")
     elif "dot" in type:
         fig = px.scatter(df)
     elif "line" in type:
@@ -705,13 +708,13 @@ def get_total_samples_received_per_sub(summary_df):
     for col in total_samples_cols:
         total_samples_df.loc[len(total_samples_df)] = [col.replace("_total_samples_received", ""), summary_df[col].max()]
         
-    return total_samples_df['total_samples_received']
+    return total_samples_df['total_samples_received'].astype(float)
 
 def get_lost_samples_received_per_sub(summary_df):
-    lost_samples_df = pd.DataFrame(columns=["sub", "lost_samples_received"])
-    lost_samples_cols = [col for col in summary_df.columns if 'sub_' in col and 'lost_samples_received' in col]
+    lost_samples_df = pd.DataFrame(columns=["sub", "lost_samples"])
+    lost_samples_cols = [col for col in summary_df.columns if 'sub_' in col and 'lost' in col]
     
     for col in lost_samples_cols:
-        lost_samples_df.loc[len(lost_samples_df)] = [col.replace("_lost_samples_received", ""), summary_df[col].max()]
+        lost_samples_df.loc[len(lost_samples_df)] = [col.replace("_lost_samples", ""), summary_df[col].max()]
         
-    return lost_samples_df['lost_samples_received']
+    return lost_samples_df['lost_samples'].astype(float)
