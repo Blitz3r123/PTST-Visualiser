@@ -237,7 +237,8 @@ def populate_summary(tests, testdir):
         total_samples_received_summary_stats = get_summary_stats(total_samples_received_df, test)
         total_samples_received_summaries.append(total_samples_received_summary_stats)
         
-        lost_samples_df = summary_df["total_samples_lost"].dropna()
+        # lost_samples_df = summary_df["total_samples_lost"].dropna()
+        lost_samples_df = get_lost_samples_received_per_sub(summary_df)
         lost_samples_dfs.append(lost_samples_df.rename(testname))
         lost_samples_summary_stats = get_summary_stats(lost_samples_df, test)
         lost_samples_summaries.append(lost_samples_summary_stats)
