@@ -1,6 +1,7 @@
 import os
 import sys
 import pandas as pd
+import re
 import dash_bootstrap_components as dbc
 import plotly.express as px
 
@@ -124,16 +125,32 @@ def get_test_selection(n_clicks, tests, testdir, children):
         
         test_selection = "_".join(values)
         
-        # ? Check if test_selection exists
-        test_selection_exists = len([_ for _ in os.listdir(testdir) if test_selection in _]) > 0
+        if 'vary' in test_selection:
+            regex_pattern = re.sub(r'vary', r'.*', test_selection)
+            
+            test_data = [_.replace("_summary.csv", "") for _ in os.listdir(testdir)]
+            
+            matched_tests = [test for test in test_data if re.match(regex_pattern, test)]
+            
+            if len(matched_tests) > 0:
+                if tests:
+                    tests.extend(matched_tests)
+                else:
+                    tests = matched_tests
+            
+            return tests
+            
+        else:
+            # ? Check if test_selection exists
+            test_selection_exists = len([_ for _ in os.listdir(testdir) if test_selection in _]) > 0
         
-        if test_selection_exists:
-            if tests is not None:
-                tests.append(test_selection)
-            else:
-                tests = [test_selection]
-    
-        return tests
+            if test_selection_exists:
+                if tests:
+                    tests.append(test_selection)
+                else:
+                    tests = [test_selection]
+        
+            return tests
 
 @app.callback(
     [
@@ -231,7 +248,7 @@ def populate_summary(tests, testdir):
     participant_allocation_output = get_participant_allocation_output(participant_allocation_dfs)
 
     lat_summary_table = generate_summary_table(lat_summaries)
-    lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (ms)") if lat_dfs else None
+    lat_boxplot = get_plot("box", lat_dfs, "Test", "Latency (ms)") if lat_dfs is not None else None
     lat_dotplot = get_plot("dot", lat_dfs, "Number of Observations", "Latency (ms)") if lat_dfs else None
     lat_lineplot = get_plot("line", lat_dfs, "Number of Observations", "Latency (ms)") if lat_dfs else None
     lat_histogram = get_plot("histogram", lat_dfs, "Latency (ms)", "Number of Observations") if lat_dfs else None

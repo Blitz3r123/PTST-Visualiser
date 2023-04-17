@@ -692,7 +692,7 @@ def generate_setting_selection(testpath):
         dbc.Col([
             dcc.Dropdown(
                 id='dropdown-{}'.format(i),
-                options=[{'label': val, 'value': val} for val in sorted(sublist)],
+                options=[{'label': val, 'value': val} for val in sorted(sublist)] + [{'label': 'Vary', 'value': 'vary'}],
                 value=sublist[0],
                 style={"margin-bottom": "1vh", "width": "100%"}
             )
