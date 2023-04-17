@@ -24,7 +24,8 @@ app.layout = dbc.Container([
                 dbc.Input(
                     value=data_dir,
                     placeholder="Enter path to tests", 
-                    id="testdir-input"
+                    id="testdir-input",
+                    style={"border-color": "#28a745"}
                 ),
                 dcc.Dropdown(
                     [], 
