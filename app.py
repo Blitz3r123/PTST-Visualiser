@@ -68,6 +68,7 @@ app.layout = dbc.Container([
 @app.callback(
     [
         Output("test-dropdown", "options"),
+        Output("test-dropdown", "placeholder"),
         Output("combinations-container", "children"),
         Output("testdir", "children"),
         Output("alert-container", "children"),
@@ -95,7 +96,7 @@ def populate_dropdown(testpath):
     else:
         alert_output = []
     
-    return test_summaries, comb_output, testpath, alert_output, generate_setting_selection(testpath)
+    return test_summaries, f"Pick from {len(test_summaries)} tests...", comb_output, testpath, alert_output, generate_setting_selection(testpath)
 
 @app.callback(
     Output("test-dropdown", "value"),
