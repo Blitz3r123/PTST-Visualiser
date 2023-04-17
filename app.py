@@ -39,6 +39,15 @@ app.layout = dbc.Container([
                 html.Div(
                     dbc.Button("Add Plot", color="primary", style={"width": "100%"}, id="setting-selector-button")
                 ),
+                html.Div([
+                    html.H4("Dependency Analysis", style={"margin-top": "1vh"}),
+                    html.P("Select which factor to vary whilst keeping all others constant.", style={"color": "grey", "margin-top": "1vh", "font-size": "8pt"}),
+                    html.Div(dcc.Dropdown(
+                        ["Duration", "Data Length", "Publisher Count", "Subscriber Count", "Reliability", "Multicast", "Durability", "Latency Count"],
+                        multi=False,
+                        placeholder="Choose a factor to vary"
+                    ), style={"margin-top": "1vh"})
+                ]),
                 html.Div([dbc.ListGroup(
                     generate_toc()
                 )]),
