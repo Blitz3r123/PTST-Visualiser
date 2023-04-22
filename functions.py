@@ -763,3 +763,15 @@ def get_participant_allocation_output(dfs):
             
     return html.Div(children=children)
         
+def get_truncation_index(df):
+    # ? Ignore the first l observations
+    for l in range(len(df) - 1):
+        # ? Calculate the min and max of the remaining observations
+        min_val = df.iloc[l+1:].min()
+        max_val = df.iloc[l+1:].max()
+        # ? Check if the l+1 observation is neither the minimum nor the maximum
+        if (df.iloc[l+1] != min_val).any() and (df.iloc[l+1] != max_val).any():
+            # ? Return the value of l at that point
+            return l
+        
+    return len(df.index)
