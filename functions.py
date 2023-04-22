@@ -10,6 +10,7 @@ from pprint import pprint
 from plotly.subplots import make_subplots
 from rich.console import Console
 from statistics import NormalDist
+from scipy import stats
 from dash import Dash, html, dcc, Output, Input
 from random import randrange, sample
 
@@ -55,6 +56,7 @@ def get_summary_stats(df, test):
     interquartile_range = upper_quartile - lower_quartile
     df_min = df.min()
     df_max = df.max()
+    conf_int_95 = stats.norm.interval(0.95, loc=df.mean(), scale=stats.sem(df))
     
     summary_stats =  {
         "test": test, 
@@ -69,7 +71,8 @@ def get_summary_stats(df, test):
         "upper_quartile": upper_quartile, 
         "interquartile_range": interquartile_range, 
         "min": df_min,
-        "max": df_max
+        "max": df_max,
+        "confidence_interval_95": conf_int_95
     }
         
     return summary_stats
@@ -182,7 +185,15 @@ def generate_summary_table(summaries):
             html.Tr([html.Td("upper_quartile")] + [html.Td("{0:,.2f}".format(summary["upper_quartile"])) for summary in summaries]),
             html.Tr([html.Td("interquartile_range")] + [html.Td("{0:,.2f}".format(summary["interquartile_range"])) for summary in summaries]),
             html.Tr([html.Td("min")] + [html.Td("{0:,.2f}".format(summary["min"])) for summary in summaries]),
-            html.Tr([html.Td("max")] + [html.Td("{0:,.2f}".format(summary["max"])) for summary in summaries])
+            html.Tr([html.Td("max")] + [html.Td("{0:,.2f}".format(summary["max"])) for summary in summaries]),
+            html.Tr(
+                [html.Td("95% Confidence Interval")] + 
+                [
+                    html.Td(
+                        "{0:,.2f}".format(summary["confidence_interval_95"][0]) + ", " + "{0:,.2f}".format(summary["confidence_interval_95"][1])
+                    ) for summary in summaries
+                ]
+            )
         ])
     ], bordered=True, hover=True)
     
