@@ -389,82 +389,8 @@ def get_plot(type, dfs, x_title, y_title):
     return dcc.Graph(figure=fig)
 
 def get_transient_analysis(dfs, metric):
-    figs = []
     
-    for df in dfs:
-        fig = make_subplots(
-            rows=2, 
-            cols=6, 
-            specs=[
-                [{"colspan": 4, "rowspan": 2}, None, None, None, None, {}],
-                [None, None, None, None, None, {}]
-            ],
-            start_cell="top-left",
-            horizontal_spacing=0,
-            subplot_titles=("Line Plot", "Histograms", "CDFs")
-        )
-        
-        fig.add_trace(
-            go.Scatter(y=df, x=df.index, mode='markers'),
-            row=1, col=1
-        )
-        fig.add_vline(x=len(df.index) / 2, row=1, col=1, line_dash="dash", line_width=3)
-        # ? Big "A"
-        fig.add_annotation(
-            x=len(df.index) * .25, 
-            y=df.max() * .5, 
-            text="A", 
-            row=1, col=1, 
-            showarrow=False
-        )
-        # ? Big "B"
-        fig.add_annotation(
-            x=len(df.index) * .75, 
-            y=df.max() * .5, 
-            text="B", 
-            row=1, col=1, 
-            showarrow=False
-        )
-        fig.update_annotations(font_size=40, selector={"text": "A"})
-        fig.update_annotations(font_size=40, selector={"text": "B"})
-        fig['layout']['xaxis'].update(title_text="Number of Observations")
-        fig['layout']['yaxis'].update(title_text=metric)
-        
-        mid_point = int(len(df.index) *.5)
-        
-        df_a = df.iloc[:mid_point].rename("A").reset_index(drop=True)
-        df_b = df.iloc[mid_point:].rename("B").reset_index(drop=True)
-        
-        combined_df = pd.concat([df_a, df_b], axis=1).reset_index().iloc[:, 1:]
-                
-        fig.add_trace(
-            go.Histogram(x=df_a, name="A"),
-            row=1, col=6
-        ),
-        fig.add_trace(
-            go.Histogram(x=df_b, name="B"),
-            row=1, col=6
-        )
-        fig['layout']['xaxis2'].update(title_text=metric)
-        fig['layout']['yaxis2'].update(title_text="Number of Observations")
-        
-        fig.add_traces(
-            [
-                px.ecdf(combined_df).data[0],
-                px.ecdf(combined_df).data[1]
-            ],
-            rows=[2, 2], cols=[6, 6]
-        )
-        fig['layout']['xaxis3'].update(title_text=metric)
-        fig['layout']['yaxis3'].update(title_text="F(x)")
-        
-        fig.update_layout(
-            title=df.name
-        )
-        
-        figs.append(fig)
-    
-    return html.Div([dcc.Graph(figure=fig, style={"width": "100%", "height": "100%"}) for fig in figs], style={"maxWidth": "100vw", "overflowX" : "scroll", "height": "auto"})
+    return ""
 
 def get_comb_output(tests):
     durations = []

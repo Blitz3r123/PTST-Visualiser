@@ -139,8 +139,8 @@ def get_test_selection(n_clicks, tests, testdir, children):
                     tests.extend(matched_tests)
                 else:
                     tests = matched_tests
+                tests = sorted(tests, key=custom_key)
             
-            tests = sorted(tests, key=custom_key)
             return tests
             
         else:
@@ -152,8 +152,8 @@ def get_test_selection(n_clicks, tests, testdir, children):
                     tests.append(test_selection)
                 else:
                     tests = [test_selection]
-        
-            tests = sorted(tests, key=custom_key)
+                tests = sorted(tests, key=custom_key)
+                
             return tests
 
 @app.callback(
