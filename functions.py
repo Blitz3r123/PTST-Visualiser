@@ -775,3 +775,10 @@ def get_truncation_index(df):
             return l
         
     return len(df.index)
+
+def custom_key(s):
+    value = s.split('_')[1]
+    if value[-1] == 'B':
+        return int(value[:-1])
+    else:
+        return int(value) * 1000

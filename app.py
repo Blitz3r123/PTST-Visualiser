@@ -140,6 +140,7 @@ def get_test_selection(n_clicks, tests, testdir, children):
                 else:
                     tests = matched_tests
             
+            tests = sorted(tests, key=custom_key)
             return tests
             
         else:
@@ -152,6 +153,7 @@ def get_test_selection(n_clicks, tests, testdir, children):
                 else:
                     tests = [test_selection]
         
+            tests = sorted(tests, key=custom_key)
             return tests
 
 @app.callback(
