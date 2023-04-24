@@ -1,5 +1,6 @@
 import os
 import dash_bootstrap_components as dbc
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -390,7 +391,54 @@ def get_plot(type, dfs, x_title, y_title):
 
 def get_transient_analysis(dfs, metric):
     
-    return ""
+    containers = []
+    
+    for df in dfs:
+        
+        # set initial batch size and maximum batch size
+        batch_size = 10
+        max_batch_size = 100
+
+        # initialize empty lists for storing batch means and variances
+        batch_means = []
+        batch_variances = []
+
+        # loop over batch sizes
+        while batch_size <= max_batch_size:
+            # split the dataframe into batches of equal size
+            batches = np.array_split(df, len(df) / batch_size)
+
+            # calculate the mean of each batch
+            means = [batch.mean() for batch in batches]
+
+            # calculate the variance of the batch means
+            variance = np.var(means)
+
+            # append the batch mean and variance to the respective lists
+            batch_means.append(means)
+            batch_variances.append(variance)
+
+            # increase the batch size
+            batch_size += 1
+    
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(y=batch_variances))
+        fig.update_layout(
+            title="Batch Variation of Means",
+            xaxis_title="Batch Size",
+            yaxis_title="Variance of Batch Means"
+        )
+        
+        container = html.Div([
+            html.H5(f"{df.name} {metric}"),
+            dcc.Graph(figure=fig)
+        ])
+        
+        containers.append(container)
+        
+    output = html.Div(containers)
+    
+    return output
 
 def get_comb_output(tests):
     durations = []
