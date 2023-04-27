@@ -284,6 +284,14 @@ def generate_toc():
     lists.append(generate_toc_section("Sample Rate", "sample-rate"))
     lists.append(generate_toc_section("Total Samples Received", "total-samples-received"))
     lists.append(generate_toc_section("Lost Samples", "lost-samples"))
+    lists.append(
+        [
+            html.H5("System Logs", style={"marginTop": "1vh"}),
+            dbc.ListGroupItem("CPU Usage", href="#cpu_usage_title", external_link=True, style={"marginTop": "0.5vh"}),
+            dbc.ListGroupItem("RAM Usage", href="#ram_usage_title", external_link=True, style={"marginTop": "0.5vh"}),
+            dbc.ListGroupItem("Network Usage", href="#network_usage_title", external_link=True, style={"marginTop": "0.5vh"})
+        ]
+    )
     
     output = []
     for item in lists:

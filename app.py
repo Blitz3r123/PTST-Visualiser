@@ -43,7 +43,7 @@ app.layout = dbc.Container([
                 ),
                 html.Div([dbc.ListGroup(
                     generate_toc()
-                )]),
+                )], style={"marginBottom": "10vh"}),
             ], 
             width=3,
             style={"maxHeight": "100vh", "overflowY": "scroll"}
@@ -57,7 +57,18 @@ app.layout = dbc.Container([
                 generate_metric_output_content("Throughput", "throughput"),
                 generate_metric_output_content("Sample Rate", "sample-rate"),
                 generate_metric_output_content("Total Samples", "total-samples-received"),
-                generate_metric_output_content("Lost Samples", "lost-samples")
+                generate_metric_output_content("Lost Samples", "lost-samples"),
+                html.Div(id="system-logs-container", children=[
+                    html.Div([
+                        html.H3("CPU Usage", id="cpu_usage_title"),
+                    ]),
+                    html.Div([
+                        html.H3("RAM Usage", id="ram_usage_title")
+                    ]),
+                    html.Div([
+                        html.H3("Network Usage", id="network_usage_title")
+                    ])
+                ])
             ], 
             width=9,
             style={"maxHeight": "100vh", "overflowY": "scroll"}
