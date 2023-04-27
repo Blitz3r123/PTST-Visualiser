@@ -295,14 +295,28 @@ def populate_summary(tests, testdir):
             
         for col in sorted(network_packets_cols):
             
+            if "rxpck" in col:
+                plot_name = col.replace("_rxpck", "_incoming")
+            elif "txpck" in col:
+                plot_name = col.replace("_txpck", "_outgoing")
+            elif "rxmcst" in col:
+                plot_name = col.replace("_rxmcst", "_incoming_multicast")
+            elif "rxerr" in col:
+                plot_name = col.replace("_rxerr", "_incoming_multicast")
+            
             network_packets_fig.add_trace(
-                go.Scatter(y=summary_df[col].dropna(), mode="lines", name=col)
+                go.Scatter(y=summary_df[col].dropna(), mode="lines", name=plot_name)
             )
             
         for col in sorted(network_kbs_cols):
             
+            if "rxkB" in col:
+                plot_name = col.replace("_rxkB", "_incoming")
+            elif "txkB" in col:
+                plot_name = col.replace("_txkB", "_outgoing")
+                
             network_kbs_fig.add_trace(
-                go.Scatter(y=summary_df[col].dropna(), mode="lines", name=col)
+                go.Scatter(y=summary_df[col].dropna(), mode="lines", name=plot_name)
             )
         
         cpu_fig.update_layout(
