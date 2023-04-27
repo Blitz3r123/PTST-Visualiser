@@ -180,6 +180,84 @@ for i in track( range( len(usable_tests) ), description="Summarising tests...", 
     if test_summary_exists(test, summaries_dir):
         continue
     
+    log_dir = os.path.join(test, "logs")
+    
+    log_files = os.listdir(log_dir)
+    logs = [os.path.join(log_dir, file) for file in log_files if '_cpu.log' in file or '_mem.log' in file or '_dev.log' in file or '_edev.log' in file]
+    logs = sorted(logs)
+    
+    """
+    CPU:
+    - %user
+    - %system
+    - %iowait
+    - %idle
+    RAM:
+    - kbmemfree
+    - kbmemused
+    - %memused
+    Network:
+    - DEV
+        - rxpck/s
+        - txpck/s
+        - rxkB/s
+        - txkB/s
+        - rxmcst/s
+    - EDEV
+        - rxerr/s
+        - txerr/s
+        - coll/s
+    """
+    
+    log_cols = []
+    
+    for log in logs:
+        df = pd.read_csv(log, skiprows=1, delim_whitespace=True)
+        
+        log_name = os.path.basename(log).replace(".log", "")
+        
+        if "_cpu" in log:
+            user_df = pd.Series(df['%user']).rename(f"{log_name}_user").dropna()
+            system_df = pd.Series(df['%system']).rename(f"{log_name}_system").dropna()
+            iowait_df = pd.Series(df['%iowait']).rename(f"{log_name}_iowait").dropna()
+            idle_df = pd.Series(df['%idle']).rename(f"{log_name}_idle").dropna()
+            
+            log_cols.append(user_df)
+            log_cols.append(system_df)
+            log_cols.append(iowait_df)
+            log_cols.append(idle_df)
+        
+        elif "_mem" in log:
+            kbmemfree_df = pd.Series(df['kbmemfree']).rename(f"{log_name}_mem_kbmemfree").dropna()
+            kbmemused_df = pd.Series(df['kbmemused']).rename(f"{log_name}_mem_kbmemused").dropna()
+            percent_mem_used_df = pd.Series(df['%memused']).rename(f"{log_name}_mem_percentmemused").dropna()
+
+            log_cols.append(kbmemfree_df)         
+            log_cols.append(kbmemused_df)
+            log_cols.append(percent_mem_used_df)
+    
+        elif "_dev" in log:
+            rxpck_df = pd.Series(df['rxpck/s']).rename(f"{log_name}_dev_rxpck").dropna()
+            txpck_df = pd.Series(df['txpck/s']).rename(f"{log_name}_dev_txpck").dropna()
+            rxkB_df = pd.Series(df['rxkB/s']).rename(f"{log_name}_dev_rxkB").dropna()
+            txkB_df = pd.Series(df['txkB/s']).rename(f"{log_name}_dev_txkB").dropna()
+            rxmcst_df = pd.Series(df['rxmcst/s']).rename(f"{log_name}_dev_rxmcst").dropna()
+            
+            log_cols.append(rxpck_df)
+            log_cols.append(txpck_df)
+            log_cols.append(rxkB_df)
+            log_cols.append(txkB_df)
+            log_cols.append(rxmcst_df)
+            
+        elif "_edev" in log:
+            rxerr_df = pd.Series(df['rxerr/s']).rename(f"{log_name}_edev_rxerr").dropna()
+            txerr_df = pd.Series(df['txerr/s']).rename(f"{log_name}_edev_txerr").dropna()
+            coll_df = pd.Series(df['coll/s']).rename(f"{log_name}_edev_coll").dropna()
+            
+            log_cols.append(rxerr_df)
+            log_cols.append(txerr_df)
+            log_cols.append(coll_df)
+    
     pub_files = [(os.path.join( test, _ )) for _ in os.listdir(test) if "pub" in _]
     
     if len(pub_files) == 0:
@@ -213,7 +291,7 @@ for i in track( range( len(usable_tests) ), description="Summarising tests...", 
         total_samples_lost,
         pub_allocation_per_machine,
         sub_allocation_per_machine
-    ], axis=1)
+    ] + [col for col in log_cols], axis=1)
     
     # ? Add the metrics for each sub
     for sub_file in sub_files:
