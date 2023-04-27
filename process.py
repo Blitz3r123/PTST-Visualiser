@@ -237,6 +237,7 @@ for i in track( range( len(usable_tests) ), description="Summarising tests...", 
             log_cols.append(percent_mem_used_df)
     
         elif "_dev" in log:
+            df = df[df['IFACE'] == "eth0"].reset_index()
             rxpck_df = pd.Series(df['rxpck/s']).rename(f"{log_name}_rxpck").dropna()
             txpck_df = pd.Series(df['txpck/s']).rename(f"{log_name}_txpck").dropna()
             rxkB_df = pd.Series(df['rxkB/s']).rename(f"{log_name}_rxkB").dropna()
