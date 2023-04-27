@@ -237,11 +237,11 @@ for i in track( range( len(usable_tests) ), description="Summarising tests...", 
             log_cols.append(percent_mem_used_df)
     
         elif "_dev" in log:
-            rxpck_df = pd.Series(df['rxpck/s']).rename(f"{log_name}_dev_rxpck").dropna()
-            txpck_df = pd.Series(df['txpck/s']).rename(f"{log_name}_dev_txpck").dropna()
-            rxkB_df = pd.Series(df['rxkB/s']).rename(f"{log_name}_dev_rxkB").dropna()
-            txkB_df = pd.Series(df['txkB/s']).rename(f"{log_name}_dev_txkB").dropna()
-            rxmcst_df = pd.Series(df['rxmcst/s']).rename(f"{log_name}_dev_rxmcst").dropna()
+            rxpck_df = pd.Series(df['rxpck/s']).rename(f"{log_name}_rxpck").dropna()
+            txpck_df = pd.Series(df['txpck/s']).rename(f"{log_name}_txpck").dropna()
+            rxkB_df = pd.Series(df['rxkB/s']).rename(f"{log_name}_rxkB").dropna()
+            txkB_df = pd.Series(df['txkB/s']).rename(f"{log_name}_txkB").dropna()
+            rxmcst_df = pd.Series(df['rxmcst/s']).rename(f"{log_name}_rxmcst").dropna()
             
             log_cols.append(rxpck_df)
             log_cols.append(txpck_df)
@@ -250,9 +250,9 @@ for i in track( range( len(usable_tests) ), description="Summarising tests...", 
             log_cols.append(rxmcst_df)
             
         elif "_edev" in log:
-            rxerr_df = pd.Series(df['rxerr/s']).rename(f"{log_name}_edev_rxerr").dropna()
-            txerr_df = pd.Series(df['txerr/s']).rename(f"{log_name}_edev_txerr").dropna()
-            coll_df = pd.Series(df['coll/s']).rename(f"{log_name}_edev_coll").dropna()
+            rxerr_df = pd.Series(df['rxerr/s']).rename(f"{log_name}_rxerr").dropna()
+            txerr_df = pd.Series(df['txerr/s']).rename(f"{log_name}_txerr").dropna()
+            coll_df = pd.Series(df['coll/s']).rename(f"{log_name}_coll").dropna()
             
             log_cols.append(rxerr_df)
             log_cols.append(txerr_df)
