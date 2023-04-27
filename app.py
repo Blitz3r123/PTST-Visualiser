@@ -60,13 +60,16 @@ app.layout = dbc.Container([
                 generate_metric_output_content("Lost Samples", "lost-samples"),
                 html.Div(id="system-logs-container", children=[
                     html.Div([
-                        html.H3("CPU Usage", id="cpu_usage_title"),
+                        html.H3("CPU Usage", id="cpu-usage-title"),
+                        html.Div(id="cpu-usage-output")
                     ]),
                     html.Div([
-                        html.H3("RAM Usage", id="ram_usage_title")
+                        html.H3("RAM Usage", id="ram-usage-title"),
+                        html.Div(id="ram-usage-output")
                     ]),
                     html.Div([
-                        html.H3("Network Usage", id="network_usage_title")
+                        html.H3("Network Usage", id="network-usage-title"),
+                        html.Div(id="network-usage-output")
                     ])
                 ])
             ], 
@@ -199,6 +202,10 @@ def get_test_selection(n_clicks, tests, testdir, children):
         
         Output("lost-samples-barchart-output", "children"),
         
+        Output("cpu-usage-output", "children"),
+        Output("ram-usage-output", "children"),
+        Output("network-usage-output", "children"),
+        
     ],
     [
         Input("test-dropdown", "value"),
@@ -208,7 +215,7 @@ def get_test_selection(n_clicks, tests, testdir, children):
 def populate_summary(tests, testdir):
 
     if tests is None:
-        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+        return "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
     
     lat_summaries = []
     tp_summaries = []
@@ -220,6 +227,8 @@ def populate_summary(tests, testdir):
     total_samples_received_dfs = []
     lost_samples_dfs = []
     participant_allocation_dfs = []
+    
+    cpu_usage_output_children = []
     
     for test in tests:
         summary_file = os.path.join(testdir, f"{test}_summary.csv")
@@ -259,6 +268,28 @@ def populate_summary(tests, testdir):
         
         lost_samples_df = get_lost_samples_received_per_sub(summary_df)
         lost_samples_dfs.append(lost_samples_df.rename(testname))
+        
+        cpu_cols = [col for col in summary_df.columns if "_cpu" in col]
+        
+        cpu_fig = go.Figure()
+        
+        for col in sorted(cpu_cols):
+            
+            cpu_fig.add_trace(
+                go.Scatter(y=summary_df[col].dropna(), mode="lines", name=col)
+            )
+        
+        cpu_fig.update_layout(
+            xaxis_title="Time (s)",
+            yaxis_title="CPU %"
+        )
+        
+        cpu_usage_test_output = html.Div([
+            html.H3(f"{testname} CPU Usage Line Plots"),
+            dcc.Graph(figure=cpu_fig)
+        ])
+        
+        cpu_usage_output_children.append(cpu_usage_test_output)
 
     participant_allocation_output = get_participant_allocation_output(participant_allocation_dfs)
 
@@ -290,7 +321,11 @@ def populate_summary(tests, testdir):
     
     lost_samples_received_barchart = get_plot("bar", lost_samples_dfs, "sub_n", "# of samples")
         
-    return participant_allocation_output, lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_barchart, lost_samples_received_barchart
+    cpu_usage_output = html.Div(cpu_usage_output_children)
+    ram_usage_output = ""
+    network_usage_output = ""
+        
+    return participant_allocation_output, lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_barchart, lost_samples_received_barchart, cpu_usage_output, ram_usage_output, network_usage_output
 
 if __name__ == "__main__": 
     app.run_server(debug=True, host="127.0.0.1", port="6745")

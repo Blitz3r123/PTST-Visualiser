@@ -287,9 +287,9 @@ def generate_toc():
     lists.append(
         [
             html.H5("System Logs", style={"marginTop": "1vh"}),
-            dbc.ListGroupItem("CPU Usage", href="#cpu_usage_title", external_link=True, style={"marginTop": "0.5vh"}),
-            dbc.ListGroupItem("RAM Usage", href="#ram_usage_title", external_link=True, style={"marginTop": "0.5vh"}),
-            dbc.ListGroupItem("Network Usage", href="#network_usage_title", external_link=True, style={"marginTop": "0.5vh"})
+            dbc.ListGroupItem("CPU Usage", href="#cpu-usage-title", external_link=True, style={"marginTop": "0.5vh"}),
+            dbc.ListGroupItem("RAM Usage", href="#ram-usage-title", external_link=True, style={"marginTop": "0.5vh"}),
+            dbc.ListGroupItem("Network Usage", href="#network-usage-title", external_link=True, style={"marginTop": "0.5vh"})
         ]
     )
     
