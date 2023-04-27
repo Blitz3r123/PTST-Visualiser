@@ -229,6 +229,8 @@ def populate_summary(tests, testdir):
     participant_allocation_dfs = []
     
     cpu_usage_output_children = []
+    mem_usage_output_children = []
+    network_usage_output_children = []
     
     for test in tests:
         summary_file = os.path.join(testdir, f"{test}_summary.csv")
@@ -270,12 +272,36 @@ def populate_summary(tests, testdir):
         lost_samples_dfs.append(lost_samples_df.rename(testname))
         
         cpu_cols = [col for col in summary_df.columns if "_cpu" in col]
+        mem_cols = [col for col in summary_df.columns if "_mem" in col and "_kbmem" in col]
+        network_packets_cols = [col for col in summary_df.columns if ("_dev" in col or "_dev" in col) and "pck" in col or "_mcst" in col or "_rxerr" in col]
+        network_kbs_cols = [col for col in summary_df.columns if ("_dev" in col or "_dev" in col) and "_rxkB" in col or "_txkB" in col]
         
         cpu_fig = go.Figure()
+        mem_fig = go.Figure()
+        network_packets_fig = go.Figure()
+        network_kbs_fig = go.Figure()
         
         for col in sorted(cpu_cols):
             
             cpu_fig.add_trace(
+                go.Scatter(y=summary_df[col].dropna(), mode="lines", name=col)
+            )
+            
+        for col in sorted(mem_cols):
+            
+            mem_fig.add_trace(
+                go.Scatter(y=summary_df[col].dropna(), mode="lines", name=col)
+            )
+            
+        for col in sorted(network_packets_cols):
+            
+            network_packets_fig.add_trace(
+                go.Scatter(y=summary_df[col].dropna(), mode="lines", name=col)
+            )
+            
+        for col in sorted(network_kbs_cols):
+            
+            network_kbs_fig.add_trace(
                 go.Scatter(y=summary_df[col].dropna(), mode="lines", name=col)
             )
         
@@ -284,12 +310,40 @@ def populate_summary(tests, testdir):
             yaxis_title="CPU %"
         )
         
+        mem_fig.update_layout(
+            xaxis_title="Time (s)",
+            yaxis_title="Memory (KB)"
+        )
+        
+        network_packets_fig.update_layout(
+            xaxis_title="Time (s)",
+            yaxis_title="Packets Per Second"
+        )
+        
+        network_kbs_fig.update_layout(
+            xaxis_title="Time (s)",
+            yaxis_title="KB/s"
+        )
+        
         cpu_usage_test_output = html.Div([
             html.H3(f"{testname} CPU Usage Line Plots"),
             dcc.Graph(figure=cpu_fig)
         ])
         
+        mem_usage_test_output = html.Div([
+            html.H3(f"{testname} RAM Usage Line Plots"),
+            dcc.Graph(figure=mem_fig)
+        ])
+        
+        network_usage_test_output = html.Div([
+            html.H3(f"{testname} Network Usage Line Plots"),
+            dcc.Graph(figure=network_packets_fig),
+            dcc.Graph(figure=network_kbs_fig)
+        ])
+        
         cpu_usage_output_children.append(cpu_usage_test_output)
+        mem_usage_output_children.append(mem_usage_test_output)
+        network_usage_output_children.append(network_usage_test_output)
 
     participant_allocation_output = get_participant_allocation_output(participant_allocation_dfs)
 
@@ -322,8 +376,8 @@ def populate_summary(tests, testdir):
     lost_samples_received_barchart = get_plot("bar", lost_samples_dfs, "sub_n", "# of samples")
         
     cpu_usage_output = html.Div(cpu_usage_output_children)
-    ram_usage_output = ""
-    network_usage_output = ""
+    ram_usage_output = html.Div(mem_usage_output_children)
+    network_usage_output = html.Div(network_usage_output_children)
         
     return participant_allocation_output, lat_summary_table, lat_boxplot, lat_dotplot, lat_lineplot, lat_histogram, lat_cdf, lat_transient, tp_summary_table, tp_boxplot, tp_dotplot, tp_lineplot, tp_histogram, tp_cdf, tp_transient, sample_rate_summary_table, sr_boxplot, sr_dotplot, sr_lineplot, sr_histogram, sr_cdf, sr_transient, total_samples_received_barchart, lost_samples_received_barchart, cpu_usage_output, ram_usage_output, network_usage_output
 
