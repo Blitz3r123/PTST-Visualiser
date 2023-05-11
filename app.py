@@ -56,7 +56,7 @@ app.layout = dbc.Container([
                 generate_metric_output_content("Latency", "latency"),
                 generate_metric_output_content("Throughput", "throughput"),
                 generate_metric_output_content("Sample Rate", "sample-rate"),
-                generate_metric_output_content("Total Samples", "total-samples-received"),
+                generate_metric_output_content("Total Samples Received", "total-samples-received"),
                 generate_metric_output_content("Lost Samples", "lost-samples"),
                 html.Div(id="system-logs-container", children=[
                     html.Div([
