@@ -369,8 +369,7 @@ def get_plot(type, dfs, x_title, y_title):
     if "box" in type:
         fig = px.box(df, log_y=True)
     elif "bar" in type:
-        fig = px.bar(df)
-        fig.update_layout(barmode="overlay")
+        fig = px.bar(df, barmode="overlay")
     elif "dot" in type:
         fig = px.scatter(df)
     elif "line" in type:
@@ -759,8 +758,20 @@ def get_truncation_index(df):
     return len(df.index)
 
 def custom_key(s):
-    value = s.split('_')[1]
-    if value[-1] == 'B':
-        return int(value[:-1])
-    else:
-        return int(value) * 1000
+    # value = s.split('_')[1]
+    # if value[-1] == 'B':
+    #     return int(value[:-1])
+    # else:
+    #     return int(value) * 1000
+    numbers = []
+    for item in s.split('_'):
+        number = ""
+        print(item)
+        for char in item:
+            if char.isdigit():
+                number += char
+            elif number:
+                break
+        if number != "":
+            numbers.append(int(number))
+    return numbers
