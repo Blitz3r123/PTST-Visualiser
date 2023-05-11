@@ -376,7 +376,7 @@ def get_plot(type, dfs, x_title, y_title):
     elif "line" in type:
         fig = px.line(df)
     elif "histogram" in type:
-        fig = px.histogram(df)
+        fig = px.histogram(df, barmode="overlay")
     elif "cdf" in type:
         
         color_list = px.colors.qualitative.Plotly
