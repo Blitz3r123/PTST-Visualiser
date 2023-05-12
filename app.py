@@ -155,7 +155,6 @@ def get_test_selection(n_clicks, tests, testdir, children):
                     tests = matched_tests
                 tests = sorted(tests, key=custom_key)
             
-            pprint(tests)
             return tests
             
         else:
@@ -169,7 +168,6 @@ def get_test_selection(n_clicks, tests, testdir, children):
                     tests = [test_selection]
                 tests = sorted(tests, key=custom_key)
                 
-            pprint(tests)
             return tests
 
 @app.callback(

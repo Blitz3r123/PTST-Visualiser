@@ -471,7 +471,7 @@ def get_comb_output(tests):
             durabilities.append(test[6])
             lat_counts.append(test[7])
         else:
-            pprint(test)
+            pprint(f"{test} has more than 8 variables in its name.")
             continue
 
     durations = list(set(durations))
