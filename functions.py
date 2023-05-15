@@ -367,7 +367,7 @@ def get_plot(type, dfs, x_title, y_title):
     df = pd.concat(dfs, axis=1)
         
     if "box" in type:
-        fig = px.box(df, log_y=True)
+        fig = px.box(df, log_y=True) if not df.empty else ""
     elif "bar" in type:
         fig = px.bar(df, barmode="overlay")
     elif "dot" in type:
