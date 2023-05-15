@@ -365,7 +365,9 @@ def confidence_interval(data, confidence=0.95):
     
 def get_plot(type, dfs, x_title, y_title):
     df = pd.concat(dfs, axis=1)
-
+    if df.isnull().any().any():
+        df = df.dropna()
+        
     if "box" in type:
         fig = px.box(df, log_y=True)
     elif "bar" in type:
@@ -388,6 +390,8 @@ def get_plot(type, dfs, x_title, y_title):
         
         for i in range(len(dfs)):
             df = dfs[i]
+            if df.isnull().any().any():
+                df = df.dropna()
             figs.append( px.ecdf(df).update_traces(line_color=rand_colors[i]) )
         
         fig = go.Figure(data=functools.reduce(operator.add, [_.data for _ in figs]))
