@@ -365,8 +365,6 @@ def confidence_interval(data, confidence=0.95):
     
 def get_plot(type, dfs, x_title, y_title):
     df = pd.concat(dfs, axis=1)
-    if df.isnull().any().any():
-        df = df.dropna()
         
     if "box" in type:
         fig = px.box(df, log_y=True)
@@ -770,7 +768,6 @@ def custom_key(s):
     numbers = []
     for item in s.split('_'):
         number = ""
-        print(item)
         for char in item:
             if char.isdigit():
                 number += char
