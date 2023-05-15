@@ -378,9 +378,9 @@ def get_plot(type, dfs, x_title, y_title):
         fig = px.histogram(df, barmode="overlay")
     elif "cdf" in type:
         
-        color_list = px.colors.qualitative.Plotly
-        rand_ints = sample(range(0, 9), len(dfs))
-        rand_colors = [color_list[x] for x in rand_ints]
+        color_list = px.colors.qualitative.Plotly * 10
+        rand_ints = sample(range(0, len(color_list)), len(dfs))
+        rand_colors = [color_list[x % len(color_list)] for x in rand_ints]
         
         fig = go.Figure()
         
